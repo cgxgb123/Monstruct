@@ -21,16 +21,41 @@ const GET_POKEMON = gql`
 `;
 
 function App() {
-  // pass the interface to useQuery <PokemonData>
   const [searchTerm, setSearchTerm] = useState('Koffing');
   const { loading, error, data } = useQuery<PokemonData>(GET_POKEMON, {
     variables: { name: toApi(searchTerm) },
   });
 
   return (
-    <>
-      <div></div>
-    </>
+    <div className="box">
+      <h1>Monstruct</h1>
+
+      <input
+        type="text"
+        placeholder="Search Pokemon..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
+
+      <div className="slot-container">
+        <div className="slot">
+          {loading && <p>Loading...</p>}
+
+          {error && <p className="error">Not found!</p>}
+
+          {data && !loading && (
+            <img
+              src={`https://play.pokemonshowdown.com/sprites/ani/${toGif(data.getPokemon.name)}.gif`}
+              alt={data.getPokemon.name}
+              style={{ width: '100px' }}
+            />
+          )}
+        </div>
+          {/*slots for card displays*/} 
+        <div className="slot"></div>
+        <div className="slot"></div>
+      </div>
+    </div>
   );
 }
 
