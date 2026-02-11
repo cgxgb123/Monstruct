@@ -1,4 +1,3 @@
-// src/utils/helpers.ts
 // toApi: "Mr. Mime" -> "mr-mime" (For PokeAPI)
 
 export const toApi = (s: string): string =>
