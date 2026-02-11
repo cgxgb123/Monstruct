@@ -1,8 +1,35 @@
+import { ApolloProvider } from '@apollo/client/react';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { ApolloProvider } from '@apollo/client/react';
-import App from './App.tsx';
+import {
+  ApolloClient,
+  InMemoryCache,
+  HttpLink,
+  ApolloLink,
+} from '@apollo/client';
 import './index.css';
+import App from './App.tsx';
+
+const httpLink = new HttpLink({
+  uri: 'http://localhost:5000/graphql',
+});
+
+const authLink = new ApolloLink((operation, forward) => {
+  const token = localStorage.getItem('id_token');
+
+  operation.setContext({
+    headers: {
+      authorization: token ? `Bearer ${token}` : '',
+    },
+  });
+
+  return forward(operation);
+});
+
+const client = new ApolloClient({
+  link: authLink.concat(httpLink),
+  cache: new InMemoryCache(),
+});
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
