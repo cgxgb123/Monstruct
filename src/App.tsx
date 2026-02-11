@@ -51,7 +51,10 @@ function App() {
             />
           )}
         </div>
-          {/*slots for card displays*/} 
+        {/*slots for card displays*/}
+        <div className="slot"></div>
+        <div className="slot"></div>
+        <div className="slot"></div>
         <div className="slot"></div>
         <div className="slot"></div>
       </div>
