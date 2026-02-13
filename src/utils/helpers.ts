@@ -1,5 +1,3 @@
-// toApi: "Mr. Mime" -> "mr-mime" (For PokeAPI)
-
 export const toApi = (s: string): string => {
   const name = s
     .trim()
