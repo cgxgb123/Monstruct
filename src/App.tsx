@@ -31,6 +31,11 @@ function App() {
 
   return (
     <div className="box">
+      <img
+        src="./src/assets/monstruct_logo.png"
+        alt="Monstruct Logo"
+        className="logo"
+      />
       <h1>Monstruct</h1>
 
       <SearchBar onSelect={(name) => setSelectedName(name)} />
