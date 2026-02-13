@@ -8,6 +8,7 @@ const SEARCH_NAMES = gql`
       name
       displayName
       sprite
+      fallbackSprite
     }
   }
 `;
@@ -16,6 +17,7 @@ interface SearchResult {
   name: string;
   displayName: string;
   sprite: string;
+  fallbackSprite: string;
 }
 
 interface SearchData {
@@ -58,7 +60,15 @@ const SearchBar = ({ onSelect }: SearchBarProps) => {
         <ul className="dropdown">
           {data.search.map((pokemon) => (
             <li key={pokemon.name} onClick={() => handlePick(pokemon)}>
-              <img src={pokemon.sprite} alt={pokemon.name} width="30" />
+              <img
+                src={pokemon.sprite}
+                alt={pokemon.name}
+                width="30"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.src = pokemon.fallbackSprite;
+                }}
+              />
               <span>{pokemon.displayName}</span>
             </li>
           ))}
