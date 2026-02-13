@@ -1,6 +1,5 @@
 import { gql } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
-import { toApi, toGif } from './utils/helpers.ts';
 import { useState } from 'react';
 import './App.css';
 
@@ -23,7 +22,7 @@ const GET_POKEMON = gql`
 function App() {
   const [searchTerm, setSearchTerm] = useState('Koffing');
   const { loading, error, data } = useQuery<PokemonData>(GET_POKEMON, {
-    variables: { name: toApi(searchTerm) },
+    variables: { name: searchTerm },
   });
 
   return (
@@ -45,7 +44,7 @@ function App() {
 
           {data && !loading && (
             <img
-              src={`https://play.pokemonshowdown.com/sprites/ani/${toGif(data.getPokemon.name)}.gif`}
+              src={data.getPokemon.spriteUrl}
               alt={data.getPokemon.name}
               style={{ width: '100px' }}
             />
