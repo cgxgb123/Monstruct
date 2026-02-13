@@ -95,6 +95,9 @@ const LandingPage = () => {
             <button type="submit" className="submit-btn">
               {isLogin ? 'Login' : 'Signup'}
             </button>
+            <p onClick={() => setIsLogin(!isLogin)} className="toggle-auth">
+              {isLogin ? 'Need an account? Sign up' : 'Have an account? Log in'}
+            </p>
           </form>
         </div>
       )}
