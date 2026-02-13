@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
-import { useQuery } from '@apollo/client/react';
+import { useQuery, useLazyQuery } from '@apollo/client/react';
 import { useState } from 'react';
-import './App.css';
+import './css/App.css';
 
 interface PokemonData {
   getPokemon: {

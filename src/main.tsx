@@ -7,7 +7,7 @@ import {
   HttpLink,
   ApolloLink,
 } from '@apollo/client';
-import './index.css';
+import './css/index.css';
 import App from './App.tsx';
 
 const httpLink = new HttpLink({
