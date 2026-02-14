@@ -49,3 +49,19 @@ class AuthService {
 }
 
 export default new AuthService();
+
+export interface AuthResponse {
+  token: string;
+  user: {
+    _id: string;
+    username: string;
+  };
+}
+
+export interface LoginData {
+  login: AuthResponse;
+}
+
+export interface SignupData {
+  signup: AuthResponse;
+}

@@ -2,25 +2,12 @@ import { useState } from 'react';
 import { useMutation } from '@apollo/client/react';
 import { LOGIN, SIGNUP } from '../utils/mutations.ts';
 import Auth from '../utils/auth.ts';
+import { AuthResponse } from '../utils/auth.ts';
+import { LoginData } from '../utils/auth.ts';
+import { SignupData } from '../utils/auth.ts';
 import Loader from '../components/Loader.tsx';
 import logo from '../assets/monstruct_logo.png';
 import '../css/LandingPage.css';
-
-interface AuthResponse {
-  token: string;
-  user: {
-    _id: string;
-    username: string;
-  };
-}
-
-interface LoginData {
-  login: AuthResponse;
-}
-
-interface SignupData {
-  signup: AuthResponse;
-}
 
 const LandingPage = () => {
   const [isEvolving, setIsEvolving] = useState(false);
