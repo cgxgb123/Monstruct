@@ -4,7 +4,7 @@ import { useQuery } from '@apollo/client/react';
 import SearchBar from './components/SearchBar.tsx';
 import LandingPage from './pages/LandingPage.tsx';
 import Auth from './utils/auth.ts';
-import logo from '../assets/monstruct_logo.png';
+import logo from '../src/assets/monstruct_logo.png';
 import './css/App.css';
 import './css/Dropdown.css';
 
