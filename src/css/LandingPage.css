@@ -12,15 +12,29 @@
   align-items: center;
   transition: transform 0.3s ease;
 }
+.logo {
+  margin: 0 auto 15px auto;
+  display: block;
+  filter: drop-shadow(0 0 15px rgba(0, 255, 255, 0.3));
+}
 
 .orb-trigger:hover {
-  transform: scale(1.1);
+  transform: scale(1.05);
 }
 
 .auth-modal-reveal {
   animation: burst 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
-
+@keyframes burst {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
 .auth-form {
   background: #1a1a1a;
   padding: 40px;
