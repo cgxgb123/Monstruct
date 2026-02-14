@@ -16,3 +16,212 @@
 .orb-trigger:hover {
   transform: scale(1.1);
 }
+
+.auth-modal-reveal {
+  animation: burst 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.auth-form {
+  background: #1a1a1a;
+  padding: 40px;
+  border-radius: 15px;
+  border: 1px solid #333;
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+.auth-form h2 {
+  color: white;
+  text-align: center;
+  margin-bottom: 10px;
+  font-family: sans-serif;
+}
+
+.auth-form input {
+  padding: 12px;
+  background: #000;
+  border: 1px solid #444;
+  border-radius: 5px;
+  color: white;
+}
+
+.submit-btn {
+  padding: 12px;
+  background: linear-gradient(135deg, var(--color-one), var(--color-two));
+  border: none;
+  border-radius: 5px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.toggle-auth {
+  color: #888;
+  font-size: 12px;
+  text-align: center;
+  cursor: pointer;
+}
+
+/* THE ANIMATED ORB */
+.loader {
+  --color-one: #ff00ff; /* Mega Pink */
+  --color-two: #00ffff; /* Mega Cyan */
+  --color-three: #ffff00; /* Yellow highlights */
+  --color-fore: #ffffff;
+  --color-five: #ffffff;
+  --time-animation: 1.5s;
+  --size: 150px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  border-radius: 50%;
+  box-shadow: 0 0 50px rgba(255, 0, 255, 0.2);
+}
+
+.loader .sphere {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  border-radius: 50%;
+  width: var(--size);
+  height: var(--size);
+  background: radial-gradient(
+    circle at 80% 20%,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(255, 255, 255, 0.8) 20%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0) 70%
+  );
+}
+
+.loader .sphere::before {
+  content: '';
+  position: absolute;
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  box-shadow:
+    inset calc(var(--size) / -20) calc(var(--size) / -20) calc(var(--size) / 10)
+      var(--color-fore),
+    inset calc(var(--size) / 10) 0 calc(var(--size) / 5) var(--color-three);
+  animation:
+    rotation calc(var(--time-animation) * 2) linear infinite,
+    colorize calc(var(--time-animation) * 2) ease-in-out infinite;
+}
+
+.loader .sphere::after {
+  content: '';
+  position: absolute;
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  z-index: -1;
+  background:
+    radial-gradient(
+      circle at 80% 20%,
+      rgba(255, 255, 255, 0.7) 0%,
+      rgba(255, 255, 255, 0.5) 30%,
+      rgba(255, 255, 255, 0) 70%
+    ),
+    linear-gradient(120deg, var(--color-one) 20%, var(--color-two) 80%);
+  animation:
+    rotation calc(var(--time-animation) * 2) linear infinite,
+    colorblur calc(var(--time-animation) * 2) ease-in-out infinite;
+}
+
+.loader svg {
+  position: absolute;
+  width: var(--size);
+  height: var(--size);
+  animation: rotation calc(var(--time-animation) * 3)
+    cubic-bezier(0.7, 0.6, 0.3, 0.4) infinite;
+  color: white; /* Shapes inside the SVG will be white */
+}
+
+/* Original Keyframes */
+@keyframes wave-one {
+  0% {
+    d: path('M5,50 C10,50 15,50 20,50 C25,50 30,50 95,50');
+  }
+  50% {
+    d: path('M5,50 C25,50 30,20 50,20 C70,20 75,50 95,50');
+  }
+  100% {
+    d: path('M5,50 C70,50 75,50 80,50 C85,50 90,50 95,50');
+  }
+}
+
+@keyframes wave-two {
+  0% {
+    d: path('M5,50 C10,50 15,50 20,50 C25,50 30,50 95,50');
+  }
+  50% {
+    d: path('M5,50 C25,50 30,80 50,80 C70,80 75,50 95,50');
+  }
+  100% {
+    d: path('M5,50 C70,50 75,50 80,50 C85,50 90,50 95,50');
+  }
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes colorize {
+  0%,
+  100% {
+    filter: hue-rotate(0deg);
+  }
+  50% {
+    filter: hue-rotate(180deg);
+  }
+}
+
+@keyframes colorblur {
+  0%,
+  100% {
+    filter: hue-rotate(0deg) blur(calc(var(--size) / 15));
+  }
+  50% {
+    filter: hue-rotate(180deg) blur(calc(var(--size) / 10));
+  }
+}
+
+@keyframes burst {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.pulse-text {
+  color: white;
+  margin-top: 20px;
+  font-family: monospace;
+  animation: text-pulse 1.5s infinite;
+}
+
+@keyframes text-pulse {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
