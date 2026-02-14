@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { gql } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
 import SearchBar from './components/SearchBar.tsx';
+import LandingPage from './pages/LandingPage.tsx';
+import Auth from './utils/auth.ts';
 import './css/App.css';
 import './css/Dropdown.css';
 
@@ -29,8 +31,26 @@ function App() {
     skip: !selectedName,
   });
 
+  // check if user is logged in
+  if (!Auth.loggedIn()) {
+    return <LandingPage />;
+  }
+
   return (
     <div className="box">
+      <button
+        onClick={() => Auth.logout()}
+        style={{
+          position: 'absolute',
+          top: '10px',
+          right: '10px',
+          padding: '5px 10px',
+          cursor: 'pointer',
+        }}
+      >
+        Logout
+      </button>
+
       <img
         src="./src/assets/monstruct_logo.png"
         alt="Monstruct Logo"
