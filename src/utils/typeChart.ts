@@ -177,3 +177,37 @@ export const typeWeaknesses: Record<string, Record<string, number>> = {
   Steel: { Fire: 2, Fighting: 2, Ground: 2 },
   Fairy: { Poison: 2, Steel: 2 },
 };
+
+export const calculateWeaknesses = (teamTypes: string[][]) => {
+  const weaknessChart: Record<string, number> = {};
+  teamTypes.forEach((types) => {
+    types.forEach((type) => {
+      if (typeWeaknesses[type]) {
+        Object.entries(typeWeaknesses[type]).forEach(
+          ([attackingType, multiplier]) => {
+            weaknessChart[attackingType] =
+              (weaknessChart[attackingType] || 0) + multiplier;
+          },
+        );
+      }
+    });
+  });
+
+  return weaknessChart;
+};
+
+export const calculateEffectiveness = (teamTypes: string[][]) => {
+  const chart: Record<string, number> = {};
+  teamTypes.forEach((types) => {
+    types.forEach((type) => {
+      if (typeEffectiveness[type]) {
+        Object.entries(typeEffectiveness[type]).forEach(
+          ([defendingType, multiplier]) => {
+            chart[defendingType] = (chart[defendingType] || 0) + multiplier;
+          },
+        );
+      }
+    });
+  });
+  return chart;
+};
