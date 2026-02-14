@@ -211,4 +211,31 @@
   }
 }
 
+/* SVG element positioning */
+.loader .blur-outer,
+.loader .wave-circle {
+  cx: 50;
+  cy: 50;
+  r: 50;
+}
 
+.loader .blur-inner {
+  cx: 50;
+  cy: 50;
+  rx: 25;
+  ry: 25;
+}
+
+.loader .clip-mask {
+  cx: 50;
+  cy: 50;
+  rx: 25;
+  ry: 50;
+}
+
+.loader .fade-mask {
+  cx: 50;
+  cy: 50;
+  rx: 45;
+  ry: 50;
+}

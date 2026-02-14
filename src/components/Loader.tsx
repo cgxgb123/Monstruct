@@ -1,3 +1,4 @@
+import '../css/Loader.css';
 const Loader = () => {
   return (
     <div className="loader">
@@ -19,32 +20,28 @@ const Loader = () => {
           </mask>
           <mask id="blurriness" maskUnits="userSpaceOnUse">
             <g>
-              <circle cx={50} cy={50} r={50} fill="white" />
-              <ellipse cx={50} cy={50} rx={25} ry={25} fill="black" />
+              <circle className="blur-outer" fill="white" />
+              <ellipse className="blur-inner" fill="black" />
             </g>
           </mask>
           <mask id="clipping" maskUnits="userSpaceOnUse">
-            <ellipse cx={50} cy={50} rx={25} ry={50} fill="white" />
+            <ellipse className="clip-mask" fill="white" />
           </mask>
           <mask id="fade" maskUnits="userSpaceOnUse">
-            <ellipse cx={50} cy={50} rx={45} ry={50} fill="white" />
+            <ellipse className="fade-mask" fill="white" />
           </mask>
         </defs>
         <g id="shapes" mask="url(#fade)">
           <g mask="url(#clipping)">
             <circle
-              cx={50}
-              cy={50}
-              r={50}
+              className="wave-circle"
               fill="currentColor"
               mask="url(#waves)"
             />
           </g>
           <g mask="url(#blurriness)">
             <circle
-              cx={50}
-              cy={50}
-              r={50}
+              className="wave-circle"
               fill="currentColor"
               mask="url(#waves)"
             />
