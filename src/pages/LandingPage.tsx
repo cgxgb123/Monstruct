@@ -66,6 +66,11 @@ const LandingPage = () => {
       ) : (
         <div className="auth-modal-reveal">
           <form className="auth-form" onSubmit={handleFormSubmit}>
+            <img
+              src="./src/assets/monstruct_logo.png"
+              alt="Monstruct Logo"
+              className="logo"
+            />
             <h2>{isLogin ? 'Welcome Back' : 'Begin Journey'}</h2>
             {!isLogin && (
               <input
