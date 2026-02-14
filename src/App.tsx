@@ -4,6 +4,7 @@ import { useQuery } from '@apollo/client/react';
 import SearchBar from './components/SearchBar.tsx';
 import LandingPage from './pages/LandingPage.tsx';
 import Auth from './utils/auth.ts';
+import logo from '../assets/monstruct_logo.png';
 import './css/App.css';
 import './css/Dropdown.css';
 
@@ -51,11 +52,7 @@ function App() {
         Logout
       </button>
 
-      <img
-        src="./src/assets/monstruct_logo.png"
-        alt="Monstruct Logo"
-        className="logo"
-      />
+      <img src={logo} alt="Monstruct Logo" className="logo" />
       <h1>Monstruct</h1>
 
       <SearchBar onSelect={(name) => setSelectedName(name)} />

@@ -3,6 +3,7 @@ import { useMutation } from '@apollo/client/react';
 import { LOGIN, SIGNUP } from '../utils/mutations.ts';
 import Auth from '../utils/auth.ts';
 import Loader from '../components/Loader.tsx';
+import logo from '../assets/monstruct_logo.png';
 import '../css/LandingPage.css';
 
 interface AuthResponse {
@@ -66,11 +67,7 @@ const LandingPage = () => {
       ) : (
         <div className="auth-modal-reveal">
           <form className="auth-form" onSubmit={handleFormSubmit}>
-            <img
-              src="./src/assets/monstruct_logo.png"
-              alt="Monstruct Logo"
-              className="logo"
-            />
+            <img src={logo} alt="Monstruct Logo" className="logo" />
             <h2>{isLogin ? 'Welcome Back' : 'Begin Journey'}</h2>
             {!isLogin && (
               <input
