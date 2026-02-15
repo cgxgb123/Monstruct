@@ -1,17 +1,6 @@
 import { useState } from 'react';
-import { gql } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
-
-const SEARCH_NAMES = gql`
-  query Search($name: String!) {
-    search(name: $name) {
-      name
-      displayName
-      sprite
-      fallbackSprite
-    }
-  }
-`;
+import { SEARCH_NAMES } from '../utils/mutations.ts';
 
 interface SearchResult {
   name: string;

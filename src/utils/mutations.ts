@@ -8,6 +8,16 @@ export const GET_POKEMON = gql`
     }
   }
 `;
+export const SEARCH_NAMES = gql`
+  query Search($name: String!) {
+    search(name: $name) {
+      name
+      displayName
+      sprite
+      fallbackSprite
+    }
+  }
+`;
 
 export const SIGNUP = gql`
   mutation signup($username: String!, $email: String!, $password: String!) {
