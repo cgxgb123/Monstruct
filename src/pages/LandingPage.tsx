@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useMutation } from '@apollo/client/react';
 import { LOGIN, SIGNUP } from '../utils/mutations.ts';
 import Auth from '../utils/auth.ts';
-import { AuthResponse } from '../utils/auth.ts';
 import { LoginData } from '../utils/auth.ts';
 import { SignupData } from '../utils/auth.ts';
 import Loader from '../components/Loader.tsx';
