@@ -1,21 +1,12 @@
 import { useState } from 'react';
-import { gql } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
 import SearchBar from './components/SearchBar.tsx';
 import LandingPage from './pages/LandingPage.tsx';
 import Auth from './utils/auth.ts';
 import logo from '../src/assets/monstruct_logo.png';
+import { GET_POKEMON } from './utils/mutations.ts';
 import './css/App.css';
 import './css/Dropdown.css';
-
-const GET_POKEMON = gql`
-  query GetPokemon($name: String!) {
-    getPokemon(name: $name) {
-      name
-      spriteUrl
-    }
-  }
-`;
 
 interface PokemonData {
   getPokemon: {
