@@ -14,7 +14,7 @@ interface SearchData {
 }
 
 interface SearchBarProps {
-  onSelect: (name: string) => void;
+  onSelect: (pokemon: SearchResult) => void;
 }
 
 const SearchBar = ({ onSelect }: SearchBarProps) => {
@@ -27,9 +27,9 @@ const SearchBar = ({ onSelect }: SearchBarProps) => {
   });
 
   const handlePick = (pokemon: SearchResult) => {
-    setSearchTerm(pokemon.displayName); // Show "Toxtricity" in the bar
+    setSearchTerm(pokemon.displayName);
     setShowDropdown(false);
-    onSelect(pokemon.name); // Send "toxtricity-amped" to the backend
+    onSelect(pokemon); // Pass the whole object back to App.tsx
   };
 
   return (
