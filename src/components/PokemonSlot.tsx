@@ -265,7 +265,6 @@ const PokemonSlot = ({
           )}
         </div>
 
-        {/* --- RIGHT SIDE: STATS --- */}
         <div className="stats-section">
           <div className="stats-header">
             <span>Base Stats</span>
