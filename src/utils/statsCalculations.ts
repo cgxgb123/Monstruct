@@ -13,10 +13,9 @@ export const calculateStat = (
       level +
       10
     );
-  } else {
-    return Math.floor(
-      (Math.floor(((2 * base + iv + Math.floor(ev / 4)) * level) / 100) + 5) *
-        natureMod,
-    );
   }
+  return Math.floor(
+    (Math.floor(((2 * base + iv + Math.floor(ev / 4)) * level) / 100) + 5) *
+      natureMod,
+  );
 };
