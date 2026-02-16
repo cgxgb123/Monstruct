@@ -1,5 +1,14 @@
 const BASE = 'https://pokeapi.co/api/v2';
 
+export const toTitleCase = (str: string) => {
+  if (!str) return '';
+  return str
+    .replace(/-/g, ' ')
+    .split(' ')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
+
 export const fetchPokemonData = async (name: string) => {
   const response = await fetch(`${BASE}/pokemon/${name.toLowerCase()}`);
   if (!response.ok) throw new Error('Pokemon not found');
@@ -16,7 +25,6 @@ export const fetchPokemonData = async (name: string) => {
       spd: data.stats[4].base_stat,
       spe: data.stats[5].base_stat,
     },
-    // We only store names/urls here; specific details fetched on demand
     moves: data.moves.map((m: any) => m.move.name),
   };
 };
@@ -24,27 +32,27 @@ export const fetchPokemonData = async (name: string) => {
 export const fetchMoveDetails = async (name: string) => {
   if (!name) return null;
   try {
-    const response = await fetch(
-      `${BASE}/move/${name.toLowerCase().replace(/ /g, '-')}`,
-    );
+    const cleanName = name.toLowerCase().replace(/ /g, '-');
+    const response = await fetch(`${BASE}/move/${cleanName}`);
     if (!response.ok) return null;
     const data = await response.json();
-    const description = data.flavor_text_entries.find(
-      (entry: any) => entry.language.name === 'en',
+
+    const entry = data.flavor_text_entries.find(
+      (e: any) => e.language.name === 'en',
     );
 
     return {
-      name: data.name,
+      name: toTitleCase(data.name),
       type: data.type.name,
       power: data.power,
       accuracy: data.accuracy,
       pp: data.pp,
-      description: description
-        ? description.flavor_text
+      description: entry
+        ? entry.flavor_text.replace(/\n/g, ' ')
         : 'No description available.',
     };
   } catch (e) {
-    console.error(e);
+    console.error('Move fetch error:', e);
     return null;
   }
 };
@@ -52,22 +60,23 @@ export const fetchMoveDetails = async (name: string) => {
 export const fetchItemDetails = async (name: string) => {
   if (!name) return null;
   try {
-    const response = await fetch(
-      `${BASE}/item/${name.toLowerCase().replace(/ /g, '-')}`,
-    );
+    const cleanName = name.toLowerCase().replace(/ /g, '-');
+    const response = await fetch(`${BASE}/item/${cleanName}`);
     if (!response.ok) return null;
     const data = await response.json();
-    const description = data.flavor_text_entries.find(
-      (entry: any) => entry.language.name === 'en',
+
+    const entry = data.flavor_text_entries.find(
+      (e: any) => e.language.name === 'en',
     );
 
     return {
-      name: data.name,
-      description: description
-        ? description.flavor_text
+      name: toTitleCase(data.name),
+      description: entry
+        ? entry.flavor_text.replace(/\n/g, ' ')
         : 'No description available.',
     };
   } catch (e) {
+    console.error('Item fetch error:', e);
     return null;
   }
 };
