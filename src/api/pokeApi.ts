@@ -30,9 +30,9 @@ export const fetchPokemonData = async (name: string) => {
 };
 
 export const fetchMoveDetails = async (name: string) => {
-  if (!name) return null;
+  if (!name || typeof name !== 'string') return null;
   try {
-    const cleanName = name.toLowerCase().replace(/ /g, '-');
+    const cleanName = name.toLowerCase().trim().replace(/ /g, '-');
     const response = await fetch(`${BASE}/move/${cleanName}`);
     if (!response.ok) return null;
     const data = await response.json();
@@ -48,19 +48,18 @@ export const fetchMoveDetails = async (name: string) => {
       accuracy: data.accuracy,
       pp: data.pp,
       description: entry
-        ? entry.flavor_text.replace(/\n/g, ' ')
+        ? entry.flavor_text.replace(/\f/g, ' ')
         : 'No description available.',
     };
   } catch (e) {
-    console.error('Move fetch error:', e);
     return null;
   }
 };
 
 export const fetchItemDetails = async (name: string) => {
-  if (!name) return null;
+  if (!name || typeof name !== 'string') return null;
   try {
-    const cleanName = name.toLowerCase().replace(/ /g, '-');
+    const cleanName = name.toLowerCase().trim().replace(/ /g, '-');
     const response = await fetch(`${BASE}/item/${cleanName}`);
     if (!response.ok) return null;
     const data = await response.json();
@@ -72,11 +71,11 @@ export const fetchItemDetails = async (name: string) => {
     return {
       name: toTitleCase(data.name),
       description: entry
-        ? entry.flavor_text.replace(/\n/g, ' ')
+        ? entry.text.replace(/\f/g, ' ')
         : 'No description available.',
     };
   } catch (e) {
-    console.error('Item fetch error:', e);
+    console.error('Item API error:', e);
     return null;
   }
 };
