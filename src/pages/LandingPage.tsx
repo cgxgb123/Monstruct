@@ -2,8 +2,7 @@ import { useState } from 'react';
 import { useMutation } from '@apollo/client/react';
 import { LOGIN, SIGNUP } from '../utils/mutations.ts';
 import Auth from '../utils/auth.ts';
-import { LoginData } from '../utils/types.ts';
-import { SignupData } from '../utils/types.ts';
+import { LoginData, SignupData } from '../utils/types.ts';
 import Loader from '../components/Loader.tsx';
 import logo from '../assets/monstruct_logo.png';
 import '../css/LandingPage.css';
@@ -17,6 +16,7 @@ const LandingPage = () => {
     password: '',
   });
 
+  const [error, setError] = useState<string | null>(null);
   const [login] = useMutation<LoginData>(LOGIN);
   const [signup] = useMutation<SignupData>(SIGNUP);
 
@@ -24,10 +24,26 @@ const LandingPage = () => {
 
   const handleFormSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    setError(null); // Clear previous errors
+
+    const { email, password, username } = formState;
+    const isMissingFields = isLogin
+      ? !email || !password
+      : !email || !password || !username;
+
+    if (isMissingFields) {
+      setError(
+        isLogin
+          ? 'Input fields are empty, please enter your Email and Password to Login'
+          : 'Input fields are empty, please fill out all fields to Sign up',
+      );
+      return;
+    }
+
     try {
       if (isLogin) {
         const { data } = await login({
-          variables: { email: formState.email, password: formState.password },
+          variables: { email, password },
         });
         if (data?.login.token) {
           Auth.login(data.login.token);
@@ -40,7 +56,14 @@ const LandingPage = () => {
       }
     } catch (e) {
       console.error('Authentication failed:', e);
+      setError('Email or password is incorrect.');
     }
+  };
+
+  //  clear error when switching between Login/Signup
+  const toggleAuthMode = () => {
+    setIsLogin(!isLogin);
+    setError(null);
   };
 
   return (
@@ -55,6 +78,7 @@ const LandingPage = () => {
           <form className="auth-form" onSubmit={handleFormSubmit}>
             <img src={logo} alt="Monstruct Logo" className="logo" />
             <h2>{isLogin ? 'Welcome Back' : 'Begin Journey'}</h2>
+            {error && <div className="error-indicator">{error}</div>}
             {!isLogin && (
               <input
                 placeholder="Username"
@@ -83,7 +107,7 @@ const LandingPage = () => {
             <button type="submit" className="submit-btn">
               {isLogin ? 'Login' : 'Signup'}
             </button>
-            <p onClick={() => setIsLogin(!isLogin)} className="toggle-auth">
+            <p onClick={toggleAuthMode} className="toggle-auth">
               {isLogin ? 'Need an account? Sign up' : 'Have an account? Log in'}
             </p>
           </form>
