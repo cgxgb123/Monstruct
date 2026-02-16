@@ -16,27 +16,58 @@ export const fetchPokemonData = async (name: string) => {
       spd: data.stats[4].base_stat,
       spe: data.stats[5].base_stat,
     },
-    moves: data.moves.map((m: any) => ({
-      name: m.move.name,
-      url: m.move.url,
-    })),
+    // We only store names/urls here; specific details fetched on demand
+    moves: data.moves.map((m: any) => m.move.name),
   };
 };
 
-export const fetchMoveDetails = async (url: string) => {
-  const response = await fetch(url);
-  const data = await response.json();
-  const description = data.flavor_text_entries.find(
-    (entry: any) => entry.language.name === 'en',
-  );
+export const fetchMoveDetails = async (name: string) => {
+  if (!name) return null;
+  try {
+    const response = await fetch(
+      `${BASE}/move/${name.toLowerCase().replace(/ /g, '-')}`,
+    );
+    if (!response.ok) return null;
+    const data = await response.json();
+    const description = data.flavor_text_entries.find(
+      (entry: any) => entry.language.name === 'en',
+    );
 
-  return {
-    name: data.name,
-    type: data.type.name,
-    power: data.power,
-    accuracy: data.accuracy,
-    description: description
-      ? description.flavor_text
-      : 'No description available.',
-  };
+    return {
+      name: data.name,
+      type: data.type.name,
+      power: data.power,
+      accuracy: data.accuracy,
+      pp: data.pp,
+      description: description
+        ? description.flavor_text
+        : 'No description available.',
+    };
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
+};
+
+export const fetchItemDetails = async (name: string) => {
+  if (!name) return null;
+  try {
+    const response = await fetch(
+      `${BASE}/item/${name.toLowerCase().replace(/ /g, '-')}`,
+    );
+    if (!response.ok) return null;
+    const data = await response.json();
+    const description = data.flavor_text_entries.find(
+      (entry: any) => entry.language.name === 'en',
+    );
+
+    return {
+      name: data.name,
+      description: description
+        ? description.flavor_text
+        : 'No description available.',
+    };
+  } catch (e) {
+    return null;
+  }
 };
