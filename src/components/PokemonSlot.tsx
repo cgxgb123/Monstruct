@@ -5,35 +5,15 @@ import {
   fetchItemDetails,
   toTitleCase,
 } from '../api/pokeApi.ts';
+import {
+  StatBlock,
+  PokemonData,
+  COMMON_ITEMS,
+  NATURES,
+  POKEMON_TYPES,
+} from '../utils/types.ts';
 import { calculateStat } from '../utils/statsCalculations.ts';
 import '../css/PokemonSlot.css';
-
-//  items for the default dropdown list
-const COMMON_ITEMS = [
-  'Leftovers',
-  'Life Orb',
-  'Choice Scarf',
-  'Choice Band',
-  'Choice Specs',
-  'Focus Sash',
-  'Heavy-Duty Boots',
-  'Assault Vest',
-  'Rocky Helmet',
-  'Black Sludge',
-  'Eviolite',
-  'Expert Belt',
-  'Sitrus Berry',
-  'Weakness Policy',
-];
-
-interface StatBlock {
-  hp: number;
-  atk: number;
-  def: number;
-  spa: number;
-  spd: number;
-  spe: number;
-}
 
 const PokemonSlot = ({
   defaultName,
@@ -42,9 +22,7 @@ const PokemonSlot = ({
   defaultName: string;
   onRemove: () => void;
 }) => {
-  const [pokemon, setPokemon] = useState<any>(null);
-
-  // Stats
+  const [pokemon, setPokemon] = useState<PokemonData | null>(null);
   const [evs, setEvs] = useState<StatBlock>({
     hp: 0,
     atk: 0,
@@ -64,23 +42,25 @@ const PokemonSlot = ({
 
   const [moves, setMoves] = useState(Array(4).fill(''));
   const [item, setItem] = useState('');
-
+  const [nature, setNature] = useState('Hardy');
+  const [teraType, setTeraType] = useState('Normal');
   const [hoveredInfo, setHoveredInfo] = useState<any>(null);
   const [activeDropdown, setActiveDropdown] = useState<{
     type: 'move' | 'item';
     index?: number;
   } | null>(null);
 
-  // Refs for click-outside detection
   const slotRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    fetchPokemonData(defaultName).then((data) => {
-      setPokemon(data);
+    fetchPokemonData(defaultName).then((data: any) => {
+      const typedData = data as PokemonData; // type assertion to ensure it matches interface
+      setPokemon(typedData);
+      if (typedData?.types?.[0])
+        setTeraType(toTitleCase(typedData.types[0].type.name));
     });
   }, [defaultName]);
 
-  // Handle outside clicks to close dropdowns
   useEffect(() => {
     const handleClickOutside = (event: any) => {
       if (slotRef.current && !slotRef.current.contains(event.target)) {
@@ -91,9 +71,8 @@ const PokemonSlot = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleFocus = (type: 'move' | 'item', index?: number) => {
+  const handleFocus = (type: 'move' | 'item', index?: number) =>
     setActiveDropdown({ type, index });
-  };
 
   const handleSelection = (
     value: string,
@@ -104,7 +83,6 @@ const PokemonSlot = ({
       const newMoves = [...moves];
       newMoves[index] = toTitleCase(value);
       setMoves(newMoves);
-      // Fetch details immediately for tooltip
       fetchMoveDetails(value).then(setHoveredInfo);
     } else if (type === 'item') {
       setItem(toTitleCase(value));
@@ -131,10 +109,7 @@ const PokemonSlot = ({
 
   const getFilteredOptions = (query: string, type: 'move' | 'item') => {
     let source = type === 'move' ? pokemon?.moves || [] : COMMON_ITEMS;
-
-    // if no query, return top 20 (so user sees a list immediately)
     if (!query) return source.slice(0, 20);
-
     return source
       .filter((opt: string) => opt.toLowerCase().includes(query.toLowerCase()))
       .slice(0, 15);
@@ -165,7 +140,9 @@ const PokemonSlot = ({
             />
           </div>
 
-          <div className="mon-name-display">{toTitleCase(pokemon.name)}</div>
+          <div className="mon-name-display">
+            {toTitleCase(pokemon.name.replace('-', ' '))}
+          </div>
 
           <div className="move-input-wrapper" style={{ marginBottom: '10px' }}>
             <input
@@ -273,42 +250,93 @@ const PokemonSlot = ({
             </span>
           </div>
 
-          {Object.keys(pokemon.stats).map((stat) => {
-            const statKey = stat as keyof StatBlock;
-            const total = calculateStat(
-              statKey,
-              pokemon.stats[statKey],
-              evs[statKey],
-              ivs[statKey],
-            );
+          {(Object.keys(pokemon.stats) as Array<keyof StatBlock>).map(
+            (stat) => {
+              const total = calculateStat(
+                stat,
+                pokemon.stats[stat],
+                evs[stat],
+                ivs[stat],
+              );
 
-            return (
-              <div key={stat} className="stat-row">
-                <span className="stat-label">{stat}</span>
-                <span className="base-stat">{pokemon.stats[statKey]}</span>
-                <input
-                  type="range"
-                  min="0"
-                  max="252"
-                  step="4"
-                  value={evs[statKey]}
-                  onChange={(e) => {
-                    const val = parseInt(e.target.value);
-                    if (
-                      remainingEvs - (val - evs[statKey]) >= 0 ||
-                      val < evs[statKey]
-                    ) {
-                      setEvs({ ...evs, [statKey]: val });
-                    }
-                  }}
-                  className="ev-slider"
-                />
-                <span className="total-stat">{total}</span>
-              </div>
-            );
-          })}
-          <div className="mt-2 text-xs text-gray-400 text-center">
-            Nature: Hardy (Neutral)
+              return (
+                <div key={stat} className="stat-row">
+                  <span className="stat-label">{stat.toUpperCase()}</span>
+                  <span className="base-stat">{pokemon.stats[stat]}</span>
+                  <input
+                    type="range"
+                    min="0"
+                    max="252"
+                    step="4"
+                    value={evs[stat]}
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value);
+                      if (
+                        remainingEvs - (val - evs[stat]) >= 0 ||
+                        val < evs[stat]
+                      ) {
+                        setEvs({ ...evs, [stat]: val });
+                      }
+                    }}
+                    className="ev-slider"
+                  />
+                  <span className="total-stat">{total}</span>
+                </div>
+              );
+            },
+          )}
+
+          <div
+            className="controls-footer"
+            style={{
+              marginTop: '15px',
+              display: 'flex',
+              gap: '10px',
+              flexDirection: 'column',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+            >
+              <label className="text-xs text-black-400">Nature:</label>
+              <select
+                className="builder-select"
+                value={nature}
+                onChange={(e) => setNature(e.target.value)}
+              >
+                {/* Fix: Changed 'natures' to imported 'NATURES' */}
+                {NATURES.map((n: string) => (
+                  <option key={n} value={n}>
+                    {n}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+            >
+              <label className="text-xs text-gray-400">Tera Type:</label>
+              <select
+                className="builder-select"
+                value={teraType}
+                onChange={(e) => setTeraType(e.target.value)}
+              >
+                {/* Fix: Changed 'types' to imported 'POKEMON_TYPES' */}
+                {POKEMON_TYPES.map((t: string) => (
+                  <option key={t} value={t}>
+                    {t}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
       </div>
