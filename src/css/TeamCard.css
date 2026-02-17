@@ -1,0 +1,180 @@
+.team-card {
+  background: #1e1e1e;
+  border-radius: 12px;
+  padding: 15px;
+  height: 400px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  border: 1px solid #333;
+  transition: all 0.2s ease;
+}
+
+.team-card:hover {
+  border-color: #555;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.empty-slot {
+  justify-content: center;
+  align-items: center;
+  border: 2px dashed #444;
+}
+
+.search-wrapper-card {
+  width: 90%;
+  margin-bottom: 10px;
+}
+
+.filled-slot .card-header {
+  display: flex;
+  justify-content: space-between;
+  color: white;
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 1.5rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.delete-btn:hover {
+  color: #ff4444;
+}
+
+.visuals-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100px;
+  margin-bottom: 10px;
+}
+
+.pokemon-sprite {
+  max-height: 80px;
+  object-fit: contain;
+}
+
+.shiny-btn {
+  background: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s;
+}
+
+.shiny-btn.active {
+  background: #ffd700;
+  color: #000;
+  border-color: #ffd700;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.tera-wrapper {
+  position: relative;
+}
+
+.tera-trigger {
+  background: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 6px;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tera-icon-current {
+  width: 24px;
+  height: 24px;
+}
+
+.tera-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: #1a1a1a;
+  border: 1px solid #444;
+  border-radius: 8px;
+  padding: 5px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  z-index: 100;
+  width: 120px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.8);
+}
+
+.tera-option {
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.tera-option:hover {
+  background: #333;
+}
+
+.tera-option img {
+  width: 24px;
+  height: 24px;
+}
+
+.types-row {
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.type-badge {
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: #444;
+  color: white;
+  text-transform: uppercase;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.detail-input,
+.move-input {
+  background: #121212;
+  border: 1px solid #333;
+  color: white;
+  padding: 8px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.detail-input:focus,
+.move-input:focus {
+  border-color: #00ffff;
+  outline: none;
+}
+
+.moves-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
