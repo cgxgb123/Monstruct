@@ -1,3 +1,15 @@
+.team-card ul,
+.team-card li,
+.search-wrapper-card ul,
+.search-wrapper-card li,
+.dropdown-list,
+.search-results {
+  list-style: none !important;
+  list-style-type: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
 .team-card {
   background: #1e1e1e;
   border-radius: 12px;
@@ -19,11 +31,6 @@
   justify-content: center;
   align-items: center;
   border: 2px dashed #444;
-}
-
-.search-wrapper-card {
-  width: 90%;
-  margin-bottom: 10px;
 }
 
 .filled-slot .card-header {
@@ -61,46 +68,14 @@
   object-fit: contain;
 }
 
-.shiny-btn {
-  background: #2a2a2a;
-  border: 1px solid #444;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  cursor: pointer;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: 0.2s;
-}
-
-.shiny-btn.active {
-  background: #ffd700;
-  color: #000;
-  border-color: #ffd700;
-  box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-}
-
 .tera-wrapper {
   position: relative;
-}
-
-.tera-trigger {
-  background: #2a2a2a;
-  border: 1px solid #444;
-  border-radius: 6px;
-  width: 36px;
-  height: 36px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .tera-icon-current {
   width: 24px;
   height: 24px;
+  cursor: pointer;
 }
 
 .tera-dropdown {
@@ -123,6 +98,8 @@
   cursor: pointer;
   padding: 4px;
   border-radius: 4px;
+  display: flex;
+  justify-content: center;
 }
 
 .tera-option:hover {
@@ -132,22 +109,6 @@
 .tera-option img {
   width: 24px;
   height: 24px;
-}
-
-.types-row {
-  display: flex;
-  gap: 5px;
-  justify-content: center;
-  margin-bottom: 10px;
-}
-
-.type-badge {
-  font-size: 0.75rem;
-  padding: 2px 8px;
-  border-radius: 4px;
-  background: #444;
-  color: white;
-  text-transform: uppercase;
 }
 
 .details-grid {
@@ -165,6 +126,8 @@
   padding: 8px;
   border-radius: 4px;
   font-size: 0.9rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .detail-input:focus,
@@ -177,4 +140,101 @@
   display: flex;
   flex-direction: column;
   gap: 5px;
+}
+
+/* --- REIMAGINED HOVER MODAL --- */
+.info-modal {
+  position: absolute;
+  bottom: 105%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #121212;
+  border: 1px solid #444;
+  border-top: 2px solid #00ffff;
+  border-radius: 8px;
+  padding: 12px;
+  width: 220px;
+  z-index: 9999;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
+  pointer-events: none;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #333;
+}
+
+.modal-title {
+  font-weight: bold;
+  color: #fff;
+  font-size: 0.9rem;
+}
+
+.type-badge {
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  color: white;
+  background: #444; /* Default */
+}
+
+/* Add type colors if desired, e.g. */
+.type-badge.fire {
+  background: #ff4422;
+}
+.type-badge.water {
+  background: #3399ff;
+}
+.type-badge.grass {
+  background: #77cc55;
+}
+.type-badge.electric {
+  background: #ffcc33;
+  color: black;
+}
+/* ... etc ... */
+
+.modal-stats {
+  display: flex;
+  justify-content: space-around;
+  background: #1a1a1a;
+  padding: 6px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-label {
+  font-size: 0.6rem;
+  color: #777;
+  text-transform: uppercase;
+}
+
+.stat-value {
+  font-size: 0.85rem;
+  color: #00ffcc;
+  font-weight: bold;
+}
+
+.stat-divider {
+  width: 1px;
+  background: #333;
+  height: 20px;
+  align-self: center;
+}
+
+.modal-desc {
+  font-size: 0.75rem;
+  color: #ccc;
+  line-height: 1.35;
 }
