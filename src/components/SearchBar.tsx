@@ -1,65 +1,87 @@
-import { useState } from 'react';
-import { useQuery } from '@apollo/client/react';
-import { SEARCH_NAMES } from '../utils/mutations.ts';
+import { useState, useEffect } from 'react';
+import { toTitleCase } from '../api/pokeApi.ts';
+import { config } from 'dotenv';
+config();
+const R2_BASE = process.env.SPRITE_CDN;
 
-interface SearchResult {
-  name: string;
-  displayName: string;
-  sprite: string;
-  fallbackSprite: string;
-}
+const SearchBar = ({ onSelect, placeholder }: any) => {
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState<any[]>([]);
 
-interface SearchData {
-  search: SearchResult[];
-}
+  useEffect(() => {
+    const searchPokemon = async () => {
+      if (query.length < 2) return setResults([]);
 
-interface SearchBarProps {
-  onSelect: (pokemon: SearchResult) => void;
-}
+      try {
+        const res = await fetch('https://pokeapi.co/api/v2/pokemon?limit=1000');
+        const data = await res.json();
 
-const SearchBar = ({ onSelect }: SearchBarProps) => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [showDropdown, setShowDropdown] = useState(false);
+        const filtered = data.results
+          .filter((p: any) => p.name.includes(query.toLowerCase()))
+          .slice(0, 6);
 
-  const { data } = useQuery<SearchData>(SEARCH_NAMES, {
-    variables: { name: searchTerm },
-    skip: searchTerm.length < 2,
-  });
+        const formattedResults = filtered.map((p: any) => {
+          const cleanName = p.name.toLowerCase();
+          return {
+            name: p.name,
+            sprite: `${R2_BASE}/official-artwork/${cleanName}.png`,
+            url: p.url,
+          };
+        });
 
-  const handlePick = (pokemon: SearchResult) => {
-    setSearchTerm(pokemon.displayName);
-    setShowDropdown(false);
-    onSelect(pokemon); // Pass the whole object back to App.tsx
-  };
+        setResults(formattedResults);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    const debounce = setTimeout(searchPokemon, 300);
+    return () => clearTimeout(debounce);
+  }, [query]);
 
   return (
-    <div className="search-container">
+    <div className="search-wrapper">
       <input
-        type="text"
-        placeholder="Search Pokemon..."
-        value={searchTerm}
-        onChange={(e) => {
-          setSearchTerm(e.target.value);
-          setShowDropdown(true);
-        }}
-        onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+        className="search-input"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder={placeholder}
       />
-
-      {showDropdown && data?.search && data.search.length > 0 && (
-        <ul className="dropdown">
-          {data.search.map((pokemon) => (
-            <li key={pokemon.name} onClick={() => handlePick(pokemon)}>
+      {results.length > 0 && (
+        <ul className="search-dropdown">
+          {results.map((pokemon) => (
+            <div
+              key={pokemon.name}
+              className="search-result-item"
+              onClick={() => {
+                onSelect(pokemon);
+                setQuery('');
+                setResults([]);
+              }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                padding: '5px',
+                cursor: 'pointer',
+              }}
+            >
               <img
                 src={pokemon.sprite}
                 alt={pokemon.name}
-                width="30"
+                style={{
+                  width: '40px',
+                  height: '40px',
+                  marginRight: '10px',
+                  objectFit: 'contain',
+                }}
                 onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.src = pokemon.fallbackSprite;
+                  // fallback if R2 image doesn't exist yet
+                  (e.target as HTMLImageElement).src =
+                    `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.url.split('/')[6]}.png`;
                 }}
               />
-              <span>{pokemon.displayName}</span>
-            </li>
+              <span>{toTitleCase(pokemon.name)}</span>
+            </div>
           ))}
         </ul>
       )}
