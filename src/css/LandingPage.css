@@ -6,11 +6,32 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #0a0a0a;
+  background: linear-gradient(
+    45deg,
+    #0a0a0a 0%,
+    #1a0520 25%,
+    #0a0a0a 50%,
+    #051a20 75%,
+    #0a0a0a 100%
+  );
+  background-size: 400% 400%;
+  animation: gradientShift 6s ease infinite;
   overflow: hidden;
   position: fixed;
   top: 0;
   left: 0;
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 .orb-trigger {
