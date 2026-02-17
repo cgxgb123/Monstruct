@@ -8,6 +8,47 @@ export const GET_POKEMON = gql`
     }
   }
 `;
+
+export const SAVE_TEAM = gql`
+  mutation SaveTeam(
+    $teamName: String!
+    $format: String!
+    $members: [TeamMemberInput]!
+  ) {
+    saveTeam(teamName: $teamName, format: $format, members: $members) {
+      _id
+      teamName
+      format
+      members {
+        species
+        ability
+        item
+      }
+    }
+  }
+`;
+
+export const GET_MY_TEAMS = gql`
+  query GetMyTeams {
+    me {
+      _id
+      username
+      teams {
+        _id
+        teamName
+        format
+        members {
+          species
+          item
+          ability
+          teraType
+          shiny
+        }
+      }
+    }
+  }
+`;
+
 export const SEARCH_NAMES = gql`
   query Search($name: String!) {
     search(name: $name) {
