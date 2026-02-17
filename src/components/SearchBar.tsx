@@ -1,43 +1,87 @@
 import { useState, useEffect } from 'react';
 import { toTitleCase } from '../api/pokeApi.ts';
-import { config } from 'dotenv';
-config();
-const R2_BASE = process.env.SPRITE_CDN;
+import { SearchBarProps } from '../utils/types.ts';
+import '../css/SearchBar.css';
+const SPRITE = import.meta.env.SPRITE_CDN;
 
-const SearchBar = ({ onSelect, placeholder }: any) => {
+const SearchBar = ({ onSelect, placeholder }: SearchBarProps) => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<any[]>([]);
+  const [isActive, setIsActive] = useState(false);
+  const [allPokemon, setAllPokemon] = useState<any[]>([]);
+
+  // Fetch all Pokemon on mount
+  useEffect(() => {
+    const fetchAllPokemon = async () => {
+      try {
+        const res = await fetch('https://pokeapi.co/api/v2/pokemon?limit=1025');
+        const data = await res.json();
+        setAllPokemon(data.results);
+      } catch (e) {
+        console.error('Failed to fetch Pokemon list', e);
+      }
+    };
+    fetchAllPokemon();
+  }, []);
 
   useEffect(() => {
     const searchPokemon = async () => {
-      if (query.length < 2) return setResults([]);
-
-      try {
-        const res = await fetch('https://pokeapi.co/api/v2/pokemon?limit=1000');
-        const data = await res.json();
-
-        const filtered = data.results
-          .filter((p: any) => p.name.includes(query.toLowerCase()))
-          .slice(0, 6);
-
-        const formattedResults = filtered.map((p: any) => {
-          const cleanName = p.name.toLowerCase();
-          return {
-            name: p.name,
-            sprite: `${R2_BASE}/official-artwork/${cleanName}.png`,
-            url: p.url,
-          };
-        });
-
-        setResults(formattedResults);
-      } catch (e) {
-        console.error(e);
+      if (query.length < 2 && !isActive) {
+        setResults([]);
+        return;
       }
+
+      // If search is empty but active, show first 10
+      if (query.length === 0 && isActive) {
+        const initial10 = allPokemon.slice(0, 10);
+        const formatted = initial10.map((p: any) => ({
+          name: p.name,
+          sprite: `${SPRITE}/official-artwork/${p.name.toLowerCase()}.png`,
+          url: p.url,
+        }));
+        setResults(formatted);
+        return;
+      }
+
+      // Filter based on query
+      const filtered = allPokemon
+        .filter((p: any) => p.name.includes(query.toLowerCase()))
+        .slice(0, 10);
+
+      const formatted = filtered.map((p: any) => ({
+        name: p.name,
+        sprite: `${SPRITE}/official-artwork/${p.name.toLowerCase()}.png`,
+        url: p.url,
+      }));
+
+      setResults(formatted);
     };
 
-    const debounce = setTimeout(searchPokemon, 300);
+    const debounce = setTimeout(searchPokemon, 200);
     return () => clearTimeout(debounce);
-  }, [query]);
+  }, [query, isActive, allPokemon]);
+
+  const handleFocus = () => {
+    setIsActive(true);
+    // Show first 10 when focused
+    if (query.length === 0 && allPokemon.length > 0) {
+      const initial10 = allPokemon.slice(0, 10);
+      const formatted = initial10.map((p: any) => ({
+        name: p.name,
+        sprite: `${SPRITE}/official-artwork/${p.name.toLowerCase()}.png`,
+        url: p.url,
+      }));
+      setResults(formatted);
+    }
+  };
+
+  const handleBlur = () => {
+    // Delay to allow click events to fire
+    setTimeout(() => {
+      setIsActive(false);
+      setResults([]);
+    }, 200);
+  };
 
   return (
     <div className="search-wrapper">
@@ -45,43 +89,36 @@ const SearchBar = ({ onSelect, placeholder }: any) => {
         className="search-input"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
         placeholder={placeholder}
       />
-      {results.length > 0 && (
+      {isActive && results.length > 0 && (
         <ul className="search-dropdown">
           {results.map((pokemon) => (
-            <div
+            <li
               key={pokemon.name}
               className="search-result-item"
               onClick={() => {
                 onSelect(pokemon);
                 setQuery('');
                 setResults([]);
-              }}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                padding: '5px',
-                cursor: 'pointer',
+                setIsActive(false);
               }}
             >
               <img
                 src={pokemon.sprite}
                 alt={pokemon.name}
-                style={{
-                  width: '40px',
-                  height: '40px',
-                  marginRight: '10px',
-                  objectFit: 'contain',
-                }}
+                className="search-result-sprite"
                 onError={(e) => {
-                  // fallback if R2 image doesn't exist yet
                   (e.target as HTMLImageElement).src =
                     `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.url.split('/')[6]}.png`;
                 }}
               />
-              <span>{toTitleCase(pokemon.name)}</span>
-            </div>
+              <span className="search-result-name">
+                {toTitleCase(pokemon.name)}
+              </span>
+            </li>
           ))}
         </ul>
       )}
