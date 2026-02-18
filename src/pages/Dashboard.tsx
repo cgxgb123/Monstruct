@@ -1,36 +1,214 @@
+import { toGif } from '../utils/helpers.ts';
 import { useQuery } from '@apollo/client/react';
 import { GET_MY_TEAMS } from '../utils/mutations.ts';
+import { useNavigate } from 'react-router-dom';
 import '../css/Dashboard.css';
 
-const Dashboard = () => {
-  const { loading, data } = useQuery(GET_MY_TEAMS);
+interface TeamMember {
+  species: string;
+  item?: string;
+  ability?: string;
+  teraType?: string;
+  shiny?: boolean;
+}
 
-  if (loading) return <div>Loading Teams...</div>;
+interface Team {
+  _id: string;
+  teamName: string;
+  format: string;
+  members: TeamMember[] | null;
+}
+
+interface TeamData {
+  me: {
+    _id: string;
+    username: string;
+    teams: Team[] | null;
+  } | null;
+}
+
+const Dashboard = () => {
+  const navigate = useNavigate();
+  const { loading, error, data } = useQuery<TeamData>(GET_MY_TEAMS, {
+    fetchPolicy: 'network-only',
+  });
+
+  if (loading) {
+    return (
+      <div className="dashboard">
+        <div className="loading-state">
+          <div className="spinner"></div>
+          <p>Loading your teams...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="dashboard">
+        <div className="error-state">
+          <h2>⚠️ Error Loading Teams</h2>
+          <p>{error.message}</p>
+          <button onClick={() => window.location.reload()}>Try Again</button>
+        </div>
+      </div>
+    );
+  }
+
+  const teams = data?.me?.teams ?? [];
+  const username = data?.me?.username ?? 'Trainer';
 
   return (
     <div className="dashboard">
-      <h1>Your Saved Teams</h1>
-      <div className="teams-grid">
-        {data?.me?.teams.map((team: any) => (
-          <div key={team._id} className="team-card monstruct-card">
-            <h3>{team.teamName}</h3>
-            <p className="format-badge">{team.format}</p>
-            <div className="mini-sprites">
-              {team.members.map((mon: any, i: number) => (
-                <div key={i} className="mini-mon">
-                  {/* Using a simple sprite fallback */}
-                  <img
-                    src={`https://play.pokemonshowdown.com/sprites/ani/${mon.name.toLowerCase()}.gif`}
-                    alt={mon.name}
-                  />
-                  <span>{mon.name}</span>
-                </div>
-              ))}
-            </div>
-            <button className="view-btn">Edit Team</button>
+      <header className="dashboard-header">
+        <div className="header-content">
+          <div>
+            <h1>
+              Welcome back, <span className="highlight">{username}</span>!
+            </h1>
+            <p className="subtitle">Manage your competitive Pokémon teams</p>
           </div>
-        ))}
-      </div>
+          <div className="header-stats">
+            <div className="stat-box">
+              <span className="stat-number">{teams.length}</span>
+              <span className="stat-label">Teams</span>
+            </div>
+            <div className="stat-box">
+              <span className="stat-number">
+                {teams.reduce((acc, t) => acc + (t.members?.length ?? 0), 0)}
+              </span>
+              <span className="stat-label">Pokémon</span>
+            </div>
+          </div>
+        </div>
+        <button className="create-team-btn" onClick={() => navigate('/')}>
+          + Create New Team
+        </button>
+      </header>
+
+      {teams.length === 0 ? (
+        <div className="empty-state">
+          <div className="empty-icon">📦</div>
+          <h2>No teams saved yet</h2>
+          <p>Start building your dream team in the Team Builder!</p>
+          <button
+            className="create-team-btn large"
+            onClick={() => navigate('/')}
+          >
+            Build Your First Team
+          </button>
+        </div>
+      ) : (
+        <div className="teams-grid">
+          {teams.map((team) => {
+            const members = team.members ?? [];
+
+            return (
+              <div key={team._id} className="team-card">
+                <div className="team-card-header">
+                  <div className="team-title-section">
+                    <h3 className="team-name">
+                      {team.teamName || 'Untitled Team'}
+                    </h3>
+                    <span className="format-badge">
+                      {team.format || 'Unranked'}
+                    </span>
+                  </div>
+                  <div className="team-actions">
+                    <button
+                      className="action-btn edit"
+                      onClick={() => navigate(`/builder?teamId=${team._id}`)}
+                      title="Edit Team"
+                    >
+                      ✏️
+                    </button>
+                    <button
+                      className="action-btn delete"
+                      title="Delete Team"
+                      onClick={async () => {
+                        if (
+                          window.confirm(
+                            `Are you sure you want to delete "${team.teamName}"?`,
+                          )
+                        ) {
+                          alert('Delete functionality coming soon!');
+                        }
+                      }}
+                    >
+                      🗑️
+                    </button>
+                  </div>
+                </div>
+
+                <div className="team-members-preview">
+                  {members.length > 0 ? (
+                    <div className="mini-sprites">
+                      {members.slice(0, 6).map((mon, i) => {
+                        const spriteName = toGif(mon?.species || 'unknown');
+
+                        const spriteUrl = mon?.shiny
+                          ? `https://play.pokemonshowdown.com/sprites/ani-shiny/${spriteName}.gif`
+                          : `https://play.pokemonshowdown.com/sprites/ani/${spriteName}.gif`;
+
+                        return (
+                          <div
+                            key={`${team._id}-mon-${i}`}
+                            className="mini-mon"
+                            title={mon?.species}
+                          >
+                            <div className="sprite-container">
+                              <img
+                                src={spriteUrl}
+                                alt={mon?.species || 'Pokemon'}
+                                className="mini-sprite"
+                                onError={(e) => {
+                                  (e.currentTarget as HTMLImageElement).src =
+                                    'https://play.pokemonshowdown.com/sprites/ani/unown.gif';
+                                }}
+                              />
+                              {mon?.shiny && (
+                                <span className="shiny-indicator">✨</span>
+                              )}
+                            </div>
+                            <span className="mini-name">
+                              {mon?.species?.substring(0, 12) ?? 'Unknown'}
+                              {mon?.species && mon.species.length > 12
+                                ? '...'
+                                : ''}
+                            </span>
+                            {mon?.item && (
+                              <span className="mini-item">{mon.item}</span>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <p className="no-members">No Pokémon in this team</p>
+                  )}
+                </div>
+
+                <div className="team-card-footer">
+                  <div className="team-info">
+                    <span className="member-count">
+                      {members.length}/6 Pokémon
+                    </span>
+                  </div>
+                  <button
+                    className="view-team-btn"
+                    onClick={() => navigate(`/builder?teamId=${team._id}`)}
+                  >
+                    View Team →
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };
+
+export default Dashboard;
