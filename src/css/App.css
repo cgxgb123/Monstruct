@@ -129,14 +129,13 @@ img {
 .box {
   width: 100%;
   min-height: 100vh;
-  background-color: #121212; /* Match your dark theme */
+  background-color: #121212;
   margin: 0;
   padding: 0;
 }
 
 .builder-header {
   width: 100%;
-  max-width: 1200px; /* Limits how far the header stretches */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -147,7 +146,6 @@ img {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 2rem;
   background: #1a1a1a;
   border-bottom: 2px solid #00ffff;
 }

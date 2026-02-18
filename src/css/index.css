@@ -11,6 +11,22 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  --bg-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  --text-main: #ffffff;
+  --accent-color: #00ffff; /* Beast Ball Teal */
+  --secondary-accent: #4a4ae2;
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --text-highlight: #ff0000;
+}
+
+.dashboard,
+.builder-container {
+  background: var(--bg-gradient);
+  color: var(--text-main);
+}
+
+.highlight {
+  color: var(--accent-color);
 }
 
 a {
