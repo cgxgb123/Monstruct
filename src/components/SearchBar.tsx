@@ -1,6 +1,7 @@
-// src/components/SearchBar.tsx:
 import { useState, useEffect } from 'react';
 import { toTitleCase } from '../api/pokeApi.ts';
+import '../css/SearchBar.css';
+import '../css/Dropdown.css';
 
 const SearchBar = ({ onSelect, placeholder }: any) => {
   const [query, setQuery] = useState('');
@@ -45,18 +46,18 @@ const SearchBar = ({ onSelect, placeholder }: any) => {
         placeholder={placeholder || 'Search Pokémon...'}
       />
       {results.length > 0 && (
-        <ul className="search-results">
+        <ul className="dropdown">
           {results.map((p) => (
             <li
               key={p.id}
               onClick={() => {
-                onSelect(p);
+                onSelect({ ...p, species: p.name });
                 setQuery('');
                 setResults([]);
               }}
             >
-              <img src={p.sprite} alt="" width="30" />
-              {toTitleCase(p.name)}
+              <img src={p.sprite} alt={p.name} />
+              <span>{toTitleCase(p.name)}</span>
             </li>
           ))}
         </ul>
