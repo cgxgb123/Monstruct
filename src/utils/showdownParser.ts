@@ -1,4 +1,3 @@
-// src/utils/showdownParser.ts:
 import { PokemonData } from './types.ts';
 
 export const exportTeamToText = (team: PokemonData[]) => {

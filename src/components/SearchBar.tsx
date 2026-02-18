@@ -1,3 +1,4 @@
+// src/components/SearchBar.tsx:
 import { useState, useEffect } from 'react';
 import { toTitleCase } from '../api/pokeApi.ts';
 
@@ -41,7 +42,7 @@ const SearchBar = ({ onSelect, placeholder }: any) => {
         className="search-input"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder={placeholder}
+        placeholder={placeholder || 'Search Pokémon...'}
       />
       {results.length > 0 && (
         <ul className="search-results">
