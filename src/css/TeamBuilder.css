@@ -8,14 +8,22 @@
 
 .toolbar {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column; /* Stacks the Title above the Buttons */
+  align-items: center; /* Centers everything horizontally */
+  gap: 20px; /* Adds space between the Animation and the Buttons */
   margin-bottom: 30px;
   border-bottom: 2px solid #333;
-  padding-bottom: 15px;
+  padding-bottom: 20px;
 }
 
+/* Optional: Ensure the title is centered */
 .app-title {
+  text-align: center;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 10px; /* Space between "MonStruct" and the Animation */
+  flex-wrap: wrap; /* Prevents breaking on very small mobile screens */
   color: #00ffff;
   margin: 0;
   font-family: 'orbitron', sans-serif;

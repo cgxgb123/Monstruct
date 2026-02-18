@@ -1,15 +1,127 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import Typewriter from 'typewriter-effect';
 import TeamCard from '../components/TeamCard.tsx';
 import {
   exportTeamToText,
   parseShowdownImport,
 } from '../utils/showdownParser.ts';
+import { useMutation, useQuery } from '@apollo/client/react';
+import { SAVE_TEAM, UPDATE_TEAM, GET_TEAM_BY_ID } from '../utils/mutations.ts';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import '../css/TeamBuilder.css';
+
+const normalizeStats = (stats: any) => ({
+  hp: stats?.hp ?? stats?.HP ?? 0,
+  atk: stats?.atk ?? stats?.Atk ?? 0,
+  def: stats?.def ?? stats?.Def ?? 0,
+  spa: stats?.spa ?? stats?.SpA ?? 0,
+  spd: stats?.spd ?? stats?.SpD ?? 0,
+  spe: stats?.spe ?? stats?.Spe ?? 0,
+});
+
+const transformForGraphQL = (pokemon: any) => ({
+  species: pokemon.name,
+  nickname: pokemon.nickname || pokemon.name,
+  shiny: pokemon.shiny || false,
+  gender: 'N',
+  level: 50,
+  item: pokemon.item || '',
+  ability: pokemon.ability || '',
+  nature: pokemon.nature || 'Serious',
+  teraType: pokemon.teraType || 'Normal',
+  moves: pokemon.moves || ['', '', '', ''],
+  evs: normalizeStats(pokemon.evs),
+  ivs: normalizeStats(pokemon.ivs),
+});
+
+interface GetTeamData {
+  getTeam: {
+    _id: string;
+    teamName: string;
+    format: string;
+    members: Array<{
+      species: string;
+      item?: string;
+      ability?: string;
+      teraType?: string;
+      shiny?: boolean;
+      nature?: string;
+      moves: string[];
+      evs: {
+        hp: number;
+        atk: number;
+        def: number;
+        spa: number;
+        spd: number;
+        spe: number;
+      };
+      ivs: {
+        hp: number;
+        atk: number;
+        def: number;
+        spa: number;
+        spd: number;
+        spe: number;
+      };
+    }> | null;
+  } | null;
+}
 
 const TeamBuilder = () => {
   const [team, setTeam] = useState(Array(6).fill(null));
   const [importModalOpen, setImportModalOpen] = useState(false);
   const [importText, setImportText] = useState('');
+  const [teamName, setTeamName] = useState('My Team');
+
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+
+  const teamId = searchParams.get('teamId');
+  const isEditMode = !!teamId;
+
+  const { data: teamData, loading: teamLoading } = useQuery<GetTeamData>(
+    GET_TEAM_BY_ID,
+    {
+      variables: { teamId },
+      skip: !isEditMode,
+    },
+  );
+
+  useEffect(() => {
+    if (teamData?.getTeam) {
+      const loadedTeam = Array(6).fill(null);
+      const members = teamData.getTeam.members || [];
+
+      members.forEach((mon, i: number) => {
+        if (i < 6 && mon?.species) {
+          loadedTeam[i] = {
+            name: mon.species,
+            item: mon.item || '',
+            ability: mon.ability || '',
+            teraType: mon.teraType || 'Normal',
+            shiny: mon.shiny || false,
+            nature: mon.nature || 'Serious',
+            moves: mon.moves || ['', '', '', ''],
+            evs: mon.evs || { hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 },
+            ivs: mon.ivs || {
+              hp: 31,
+              atk: 31,
+              def: 31,
+              spa: 31,
+              spd: 31,
+              spe: 31,
+            },
+          };
+        }
+      });
+
+      setTeam(loadedTeam);
+      setTeamName(teamData.getTeam.teamName || 'My Team');
+    }
+  }, [teamData]);
+
+  const [saveTeam] = useMutation(SAVE_TEAM);
+  const [updateTeam] = useMutation(UPDATE_TEAM);
 
   const updateSlot = (index: number, data: any) => {
     const newTeam = [...team];
@@ -35,7 +147,6 @@ const TeamBuilder = () => {
   const handleImport = () => {
     try {
       const parsedTeam = parseShowdownImport(importText);
-      // Fill the team array up to 6 slots
       const newTeam = Array(6).fill(null);
       parsedTeam.slice(0, 6).forEach((p, i) => (newTeam[i] = p));
       setTeam(newTeam);
@@ -45,17 +156,89 @@ const TeamBuilder = () => {
     }
   };
 
+  const handleSaveTeam = async () => {
+    const filledSlots = team.filter((p) => p !== null && p.name);
+    if (filledSlots.length === 0)
+      return alert(
+        'Team is empty! Please add at least one Pokémon before saving. <3',
+      );
+
+    try {
+      const membersData = filledSlots.map(transformForGraphQL);
+      if (isEditMode && teamId) {
+        await updateTeam({
+          variables: {
+            teamId,
+            teamName,
+            format: 'gen9vgc2026regi',
+            members: membersData,
+          },
+        });
+        alert('Team updated successfully!');
+      } else {
+        await saveTeam({
+          variables: {
+            teamName,
+            format: 'gen9vgc2026regi',
+            members: membersData,
+          },
+        });
+        alert('Team saved successfully!');
+      }
+      navigate('/dashboard');
+    } catch (err: any) {
+      console.error('Save Error:', err);
+      alert(`Failed to save team: ${err.message}`);
+    }
+  };
+
+  if (teamLoading && isEditMode) {
+    return (
+      <div className="builder-container">
+        <div className="loading-state">Loading team...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="builder-container">
       <div className="toolbar">
-        <h1 className="app-title">MonStruct Builder</h1>
+        <h1 className="app-title">
+          <span style={{ color: '#00ffff', display: 'inline-block' }}>
+            <Typewriter
+              options={{
+                strings: ['Build', 'Battle', 'Dominate'],
+                autoStart: true,
+                loop: true,
+                delay: 75,
+                deleteSpeed: 50,
+              }}
+            />
+          </span>
+        </h1>
+
         <div className="actions">
+          <input
+            type="text"
+            value={teamName}
+            onChange={(e) => setTeamName(e.target.value)}
+            placeholder="Team Name"
+            className="team-name-input"
+          />
           <button className="tool-btn" onClick={() => setImportModalOpen(true)}>
             Import
           </button>
           <button className="tool-btn" onClick={handleExport}>
             Export
           </button>
+          <button className="tool-btn save-btn" onClick={handleSaveTeam}>
+            {isEditMode ? 'Update Team' : 'Save Team'}
+          </button>
+          {isEditMode && (
+            <button className="tool-btn" onClick={() => navigate('/dashboard')}>
+              Cancel
+            </button>
+          )}
         </div>
       </div>
 
@@ -71,7 +254,6 @@ const TeamBuilder = () => {
         ))}
       </div>
 
-      {/* Simple Import Modal */}
       {importModalOpen && (
         <div className="modal-overlay">
           <div className="import-modal">
