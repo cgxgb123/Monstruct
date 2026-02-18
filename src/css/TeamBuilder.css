@@ -3,28 +3,32 @@
   max-width: 1200px;
   margin: 0 auto;
   min-height: 100vh;
-  background-color: #121212;
+  background-color: transparent;
+}
+
+.typing-text {
+  color: var(--accent-color);
+  text-shadow: var(--accent-glow);
 }
 
 .toolbar {
   display: flex;
-  flex-direction: column; /* Stacks the Title above the Buttons */
-  align-items: center; /* Centers everything horizontally */
-  gap: 20px; /* Adds space between the Animation and the Buttons */
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
   margin-bottom: 30px;
   border-bottom: 2px solid #333;
   padding-bottom: 20px;
 }
 
-/* Optional: Ensure the title is centered */
 .app-title {
   text-align: center;
   width: 100%;
   display: flex;
   justify-content: center;
-  gap: 10px; /* Space between "MonStruct" and the Animation */
-  flex-wrap: wrap; /* Prevents breaking on very small mobile screens */
-  color: #00ffff;
+  gap: 10px;
+  flex-wrap: wrap;
+  color: var(--accent-color);
   margin: 0;
   font-family: 'orbitron', sans-serif;
   letter-spacing: 2px;
@@ -42,9 +46,9 @@
 }
 
 .tool-btn:hover {
-  background: #00ffff;
+  background: var(--accent-color);
   color: #000;
-  border-color: #00ffff;
+  border-color: var(--accent-color);
 }
 
 .team-grid {
@@ -73,8 +77,8 @@
   border-radius: 12px;
   width: 90%;
   max-width: 600px;
-  border: 1px solid #00ffff;
-  box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+  border: 1px solid var(--accent-color);
+  box-shadow: 0 0 20px var(--accent-glow);
 }
 
 .import-modal h3 {
@@ -109,7 +113,7 @@
 }
 
 .modal-actions button:first-child {
-  background: #00ffff;
+  background: var(--accent-color);
   color: black;
 }
 

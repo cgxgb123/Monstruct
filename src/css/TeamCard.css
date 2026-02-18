@@ -1,3 +1,4 @@
+@import './index.css';
 .team-card ul,
 .team-card li,
 .search-wrapper-card ul,
@@ -14,9 +15,9 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
-  width: 100%; /* Ensure it fills the parent wrapper */
-  max-width: 1100px; /* Optional: keeps cards from getting too wide on huge screens */
-  margin: 20px auto; /* Centers the grid itself */
+  width: 100%; 
+  max-width: 1100px;
+  margin: 20px auto;
   padding: 0;
 }
 
@@ -27,7 +28,7 @@
   margin-top: 5px;
 }
 .team-card {
-  background: #1e1e1e;
+  background: var(--card-bg);
   border-radius: 12px;
   padding: 15px;
   width: 100%;
@@ -161,7 +162,6 @@
   gap: 5px;
 }
 
-/* --- REIMAGINED HOVER MODAL --- */
 .info-modal {
   position: absolute;
   bottom: 105%;
@@ -169,7 +169,7 @@
   transform: translateX(-50%);
   background: #121212;
   border: 1px solid #444;
-  border-top: 2px solid #00ffff;
+  border-top: 2px solid var(--accent-color);
   border-radius: 8px;
   padding: 12px;
   width: 220px;
@@ -199,10 +199,9 @@
   border-radius: 4px;
   text-transform: uppercase;
   color: white;
-  background: #444; /* Default */
+  background: #444; 
 }
 
-/* Add type colors if desired, e.g. */
 .type-badge.fire {
   background: #ff4422;
 }
@@ -216,7 +215,6 @@
   background: #ffcc33;
   color: black;
 }
-/* ... etc ... */
 
 .modal-stats {
   display: flex;
@@ -241,7 +239,7 @@
 
 .stat-value {
   font-size: 0.85rem;
-  color: #00ffcc;
+  color: var(--accent-color);
   font-weight: bold;
 }
 
@@ -261,7 +259,7 @@
 .modal-move-stats {
   display: flex;
   justify-content: center;
-  gap: 30px; /* Space between columns */
+  gap: 30px; 
   padding: 15px 0;
   margin: 10px 0;
 }
@@ -326,14 +324,11 @@
 }
 
 .shiny-btn.active {
-  filter: grayscale(0);
-  opacity: 1;
-  border-color: #ffd700;
-  background: rgba(255, 215, 0, 0.1);
+  border-color: var(--secondary-accent);
   text-shadow:
-    0 0 10px #ffd700,
-    0 0 20px #ffaa00;
-  box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    0 0 10px var(--secondary-accent),
+    0 0 20px var(--secondary-accent);
+  box-shadow: 0 0 10px rgba(255, 77, 77, 0.3);
   animation: shiny-glow 1.5s infinite alternate;
 }
 
