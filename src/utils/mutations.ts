@@ -8,7 +8,62 @@ export const GET_POKEMON = gql`
     }
   }
 `;
+export const GET_TEAM_BY_ID = gql`
+  query GetTeamById($teamId: ID!) {
+    getTeam(teamId: $teamId) {
+      _id
+      teamName
+      format
+      members {
+        species
+        nickname
+        shiny
+        gender
+        level
+        item
+        ability
+        nature
+        teraType
+        moves
+        evs {
+          hp
+          atk
+          def
+          spa
+          spd
+          spe
+        }
+        ivs {
+          hp
+          atk
+          def
+          spa
+          spd
+          spe
+        }
+      }
+    }
+  }
+`;
 
+export const UPDATE_TEAM = gql`
+  mutation UpdateTeam(
+    $teamId: ID!
+    $teamName: String!
+    $format: String!
+    $members: [TeamMemberInput]!
+  ) {
+    updateTeam(
+      teamId: $teamId
+      teamName: $teamName
+      format: $format
+      members: $members
+    ) {
+      _id
+      teamName
+    }
+  }
+`;
 export const SAVE_TEAM = gql`
   mutation SaveTeam(
     $teamName: String!
@@ -39,10 +94,29 @@ export const GET_MY_TEAMS = gql`
         format
         members {
           species
+          nickname
+          shiny
           item
           ability
+          nature
           teraType
-          shiny
+          moves
+          evs {
+            hp
+            atk
+            def
+            spa
+            spd
+            spe
+          }
+          ivs {
+            hp
+            atk
+            def
+            spa
+            spd
+            spe
+          }
         }
       }
     }
