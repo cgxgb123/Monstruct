@@ -1,11 +1,11 @@
 const SMOGON_STATS_URL = 'https://pkmn.github.io/smogon/data/stats/gen9ou.json';
 
-const normalizeName = (name: string) => {
-  return name
-    .split(/[- ]+/)
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join(' ');
-};
+// const normalizeName = (name: string) => {
+//   return name
+//     .split(/[- ]+/)
+//     .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+//     .join(' ');
+// };
 
 export const fetchSmogonInsights = async (pokemonName: string) => {
   try {
