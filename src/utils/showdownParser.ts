@@ -2,7 +2,7 @@ import { PokemonData } from './types.ts';
 
 export const exportTeamToText = (team: PokemonData[]) => {
   return team
-    .filter((pkmn) => pkmn && pkmn.name) // Safety check
+    .filter((pkmn) => pkmn && pkmn.name) 
     .map((pkmn) => {
       let text = `${pkmn.name}`;
       if (pkmn.item) text += ` @ ${pkmn.item}`;
