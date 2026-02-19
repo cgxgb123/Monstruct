@@ -44,6 +44,8 @@ export const fetchPokemonData = async (name: string): Promise<PokemonData> => {
       spe: data.stats[5].base_stat,
     },
     moves: data.moves.map((m: any) => m.move.name),
+    evs: { hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 },
+    ivs: { hp: 31, atk: 31, def: 31, spa: 31, spd: 31, spe: 31 },
   };
 };
 
