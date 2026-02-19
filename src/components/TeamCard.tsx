@@ -1,5 +1,5 @@
-// Monstruct\src\components\TeamCard.tsx:
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import SearchBar from '../components/SearchBar.tsx';
 import { TERA_TYPES, TYPE_ICONS } from '../utils/teraTypes.ts';
 import {
@@ -14,9 +14,18 @@ import '../css/TeamCard.css';
 
 const SPRITE = import.meta.env.SPRITE_CDN;
 const STAT_KEYS = ['hp', 'atk', 'def', 'spa', 'spd', 'spe'];
+const STAT_LABELS: Record<string, string> = {
+  hp: 'HP',
+  atk: 'Atk',
+  def: 'Def',
+  spa: 'SpA',
+  spd: 'SpD',
+  spe: 'Spe',
+};
 
 const TeamCard = ({ pokemon, index, onUpdate, onDelete }: any) => {
   const [showTeraMenu, setShowTeraMenu] = useState(false);
+  const [showStatsModal, setShowStatsModal] = useState(false);
   const [allGameItems, setAllGameItems] = useState<any[]>([]);
   const [availableMoves, setAvailableMoves] = useState<string[]>([]);
   const [possibleAbilities, setPossibleAbilities] = useState<string[]>([]);
@@ -32,7 +41,6 @@ const TeamCard = ({ pokemon, index, onUpdate, onDelete }: any) => {
   useEffect(() => {
     if (!pokemon?.name) return;
 
-    //  "Charizard Mega X" -> "charizard-mega-x"
     const apiName = pokemon.name.toLowerCase().trim().replace(/\s+/g, '-');
     const fetchUrl = `https://pokeapi.co/api/v2/pokemon/${apiName}`;
 
@@ -50,19 +58,21 @@ const TeamCard = ({ pokemon, index, onUpdate, onDelete }: any) => {
           ...pokemon,
           types: data.types,
           url: fetchUrl,
-          evs: pokemon.evs || { HP: 0, Atk: 0, Def: 0, SpA: 0, SpD: 0, Spe: 0 },
+          evs: pokemon.evs || { hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 },
           ivs: pokemon.ivs || {
-            HP: 31,
-            Atk: 31,
-            Def: 31,
-            SpA: 31,
-            SpD: 31,
-            Spe: 31,
+            hp: 31,
+            atk: 31,
+            def: 31,
+            spa: 31,
+            spd: 31,
+            spe: 31,
           },
+          nature: pokemon.nature || 'Hardy',
         });
       })
       .catch((err) => console.error('API Sync failed for icons:', err));
   }, [pokemon?.name]);
+
   useEffect(() => {
     const cached = localStorage.getItem('items_full_cache');
     if (cached) {
@@ -78,6 +88,27 @@ const TeamCard = ({ pokemon, index, onUpdate, onDelete }: any) => {
       });
   }, []);
 
+  const applySmogonSpread = () => {
+    if (!insights?.recommendedSpread) return;
+
+    // Format: "Jolly:0/252/4/0/0/252"
+    const [nature, evString] = insights.recommendedSpread.split(':');
+    const evValues = evString.split('/').map(Number);
+
+    onUpdate(index, {
+      ...pokemon,
+      nature: nature,
+      evs: {
+        hp: evValues[0],
+        atk: evValues[1],
+        def: evValues[2],
+        spa: evValues[3],
+        spd: evValues[4],
+        spe: evValues[5],
+      },
+    });
+  };
+
   if (!pokemon) {
     return (
       <div className="team-card empty-slot">
@@ -92,35 +123,34 @@ const TeamCard = ({ pokemon, index, onUpdate, onDelete }: any) => {
               shiny: false,
               evs: { hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 },
               ivs: { hp: 31, atk: 31, def: 31, spa: 31, spd: 31, spe: 31 },
+              nature: 'Hardy',
             })
           }
         />
       </div>
     );
   }
-
-  const handleStatChange = (stat: string, val: number) => {
-    onUpdate(index, {
-      ...pokemon,
-      evs: { ...pokemon.evs, [stat]: Math.max(0, Math.min(252, val)) },
-    });
-  };
-
   const isShiny = pokemon.shiny || pokemon.isShiny;
 
-  //  Charizard Mega X -> charizard-megax
-  const animatedName = pokemon.name
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, '-')
+  // 1. Convert to standard lowercase hyphenated (PokeAPI style)
+  const baseName = pokemon.name.toLowerCase().trim().replace(/\s+/g, '-');
+
+  // 2. The "Smash Rule": Paradoxes, Ruins, and multi-word species smash the first hyphen.
+  // This targets: great-tusk -> greattusk, iron-valiant -> ironvaliant, ting-lu -> tinglu, etc.
+  // But ignores: pikachu-phd, rotom-wash, etc.
+  const animatedName = baseName
+    .replace(
+      /^(great|scream|brute|flutter|slither|sandy|iron|roaring|walking|gouging|raging|ting|chien|chi|wo|tapu|mr|type|mime)-/g,
+      '$1',
+    )
     .replace(/-mega-([xy])/g, '-mega$1');
 
-  const artworkName = animatedName.replace(/-/g, '');
+  // 3. Keep a totally smashed version for the artwork fallback just in case
+  const artworkName = baseName.replace(/-/g, '');
 
   const spriteUrl = isShiny
     ? `${SPRITE}/animated-shiny/${animatedName}.gif`
     : `${SPRITE}/animated/${animatedName}.gif`;
-
   return (
     <div className="team-card filled-slot">
       <div className="card-header">
@@ -151,7 +181,6 @@ const TeamCard = ({ pokemon, index, onUpdate, onDelete }: any) => {
             alt={pokemon.name}
             className="pokemon-sprite"
             onError={(e) => {
-              // charizardmegax.png
               e.currentTarget.src = `${SPRITE}/official-artwork/${artworkName}.png`;
             }}
           />
@@ -161,18 +190,14 @@ const TeamCard = ({ pokemon, index, onUpdate, onDelete }: any) => {
                 typeof typeEntry === 'string'
                   ? typeEntry.toLowerCase()
                   : typeEntry?.type?.name?.toLowerCase();
-
-              if (!typeName || !TYPE_ICONS[typeName]) return null;
-
-              return (
+              return typeName && TYPE_ICONS[typeName] ? (
                 <img
-                  key={`${typeName}-${idx}`}
+                  key={idx}
                   src={TYPE_ICONS[typeName]}
                   alt={typeName}
                   className="type-badge"
-                  style={{ width: '30px', height: 'auto' }}
                 />
-              );
+              ) : null;
             })}
           </div>
           <div className="tera-wrapper">
@@ -291,15 +316,15 @@ const TeamCard = ({ pokemon, index, onUpdate, onDelete }: any) => {
               <div className="insight-item">
                 <span className="label">SYNERGY:</span>
                 <span className="insight-text">
-                  {toTitleCase(pokemon.name)} is paired with{' '}
-                  <strong>{toTitleCase(insights.partner)}</strong>{' '}
-                  {insights.percent}% of the time.
+                  {toTitleCase(pokemon.name)} +{' '}
+                  <strong>{toTitleCase(insights.partner)}</strong> (
+                  {insights.percent}%)
                 </span>
               </div>
               <div className="insight-item">
-                <span className="label">Recommended Move:</span>
+                <span className="label">REC MOVE:</span>
                 <span>
-                  Try Adding <strong>{toTitleCase(insights.swap)}</strong>
+                  Try <strong>{toTitleCase(insights.swap)}</strong>
                 </span>
               </div>
             </div>
@@ -307,39 +332,131 @@ const TeamCard = ({ pokemon, index, onUpdate, onDelete }: any) => {
         </div>
 
         <div className="column-stats">
-          {STAT_KEYS.map((s) => (
-            <div key={s} className="stat-slider-row">
-              <label>{s.toUpperCase()}</label>
-              <input
-                type="range"
-                min="0"
-                max="252"
-                step="4"
-                value={pokemon.evs?.[s] || 0}
-                onChange={(e) => handleStatChange(s, parseInt(e.target.value))}
-              />
-              <span className="stat-number">{pokemon.evs?.[s] || 0}</span>
-            </div>
-          ))}
+          <button
+            className="edit-stats-trigger"
+            onClick={() => setShowStatsModal(true)}
+          >
+            ✏️ Edit Stats & Nature
+          </button>
+          <div className="mini-stats-grid">
+            {STAT_KEYS.filter((s) => pokemon.evs?.[s] > 0).map((s) => (
+              <div key={s} className="mini-stat">
+                {s.toUpperCase()}: {pokemon.evs[s]}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
+
+      {showStatsModal &&
+        createPortal(
+          <div className="modal-overlay">
+            <div className="stats-modal">
+              <div className="modal-header">
+                <h3>{toTitleCase(pokemon.name)} Training</h3>
+                <button onClick={() => setShowStatsModal(false)}>×</button>
+              </div>
+
+              {insights?.recommendedSpread && (
+                <button
+                  className="smogon-apply-btn"
+                  onClick={applySmogonSpread}
+                >
+                  Apply Suggested Nature (
+                  {insights.recommendedSpread.split(':')[0]})
+                </button>
+              )}
+
+              <div className="nature-row">
+                <label>Nature:</label>
+                <input
+                  type="text"
+                  value={pokemon.nature}
+                  onChange={(e) =>
+                    onUpdate(index, { ...pokemon, nature: e.target.value })
+                  }
+                />
+              </div>
+
+              <div className="stats-editor-grid">
+                <div className="stat-row-header">
+                  <span>Stat</span>
+                  <span>EV (Max 252)</span>
+                  <span>IV (Max 31)</span>
+                </div>
+                {STAT_KEYS.map((s) => (
+                  <div key={s} className="stat-edit-row">
+                    <label>{STAT_LABELS[s]}</label>
+                    <input
+                      type="number"
+                      value={pokemon.evs?.[s] || 0}
+                      onChange={(e) =>
+                        onUpdate(index, {
+                          ...pokemon,
+                          evs: {
+                            ...pokemon.evs,
+                            [s]: Math.min(252, parseInt(e.target.value) || 0),
+                          },
+                        })
+                      }
+                    />
+                    <input
+                      type="range"
+                      min="0"
+                      max="252"
+                      step="4"
+                      value={pokemon.evs?.[s] || 0}
+                      onChange={(e) =>
+                        onUpdate(index, {
+                          ...pokemon,
+                          evs: {
+                            ...pokemon.evs,
+                            [s]: parseInt(e.target.value),
+                          },
+                        })
+                      }
+                    />
+                    <input
+                      className="iv-input"
+                      type="number"
+                      value={pokemon.ivs?.[s] ?? 31}
+                      onChange={(e) =>
+                        onUpdate(index, {
+                          ...pokemon,
+                          ivs: {
+                            ...pokemon.ivs,
+                            [s]: Math.min(31, parseInt(e.target.value) || 0),
+                          },
+                        })
+                      }
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>,
+          document.body,
+        )}
 
       {hoverInfo && (
         <div className="info-modal">
           <div className="modal-header">
-            <div className="modal-title-group">
-              <span className="modal-title">{toTitleCase(hoverInfo.name)}</span>
+            {/* Name on the left */}
+            <span className="modal-title">{toTitleCase(hoverInfo.name)}</span>
+
+            {/* Badges pushed to the right */}
+            <div className="modal-badges">
               <span className={`category-badge ${hoverInfo.category}`}>
                 {hoverInfo.category}
               </span>
+              {(hoverInfo.type || hoverInfo.moveType) && (
+                <span
+                  className={`type-badge-text ${(hoverInfo.type || hoverInfo.moveType).toLowerCase()}`}
+                >
+                  {(hoverInfo.type || hoverInfo.moveType).toUpperCase()}
+                </span>
+              )}
             </div>
-            {hoverInfo.moveType && (
-              <span
-                className={`type-badge-text ${hoverInfo.moveType.toLowerCase()}`}
-              >
-                {hoverInfo.moveType}
-              </span>
-            )}
           </div>
 
           {hoverInfo.category === 'move' && (
@@ -362,7 +479,8 @@ const TeamCard = ({ pokemon, index, onUpdate, onDelete }: any) => {
           )}
 
           <div className="modal-desc">
-            {hoverInfo.description?.replace('$effect_chance', '10%')}
+            {hoverInfo.description?.replace('$effect_chance', '10%') ||
+              'No description available.'}
           </div>
         </div>
       )}

@@ -1,3 +1,4 @@
+// src/pages/TeamBuilder.tsx:
 import { useState, useEffect } from 'react';
 import Typewriter from 'typewriter-effect';
 import TeamCard from '../components/TeamCard.tsx';
@@ -138,7 +139,6 @@ const TeamBuilder = () => {
   const handleExport = () => {
     const filledSlots = team.filter((p) => p !== null);
     if (filledSlots.length === 0) return alert('Team is empty!');
-
     const text = exportTeamToText(filledSlots);
     navigator.clipboard.writeText(text);
     alert('Team exported to clipboard in Showdown format!');
@@ -204,7 +204,10 @@ const TeamBuilder = () => {
     <div className="builder-container">
       <div className="toolbar">
         <h1 className="app-title">
-          <span style={{ color: '#00ffff', display: 'inline-block' }}>
+          <span
+            className="typing-text"
+            style={{ color: 'var(--accent-color)', display: 'inline-block' }}
+          >
             <Typewriter
               options={{
                 strings: ['Build', 'Battle', 'Dominate'],

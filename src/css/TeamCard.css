@@ -15,7 +15,7 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
-  width: 100%; 
+  width: 100%;
   max-width: 1100px;
   margin: 20px auto;
   padding: 0;
@@ -199,7 +199,7 @@
   border-radius: 4px;
   text-transform: uppercase;
   color: white;
-  background: #444; 
+  background: #444;
 }
 
 .type-badge.fire {
@@ -259,7 +259,7 @@
 .modal-move-stats {
   display: flex;
   justify-content: center;
-  gap: 30px; 
+  gap: 30px;
   padding: 15px 0;
   margin: 10px 0;
 }
@@ -387,4 +387,35 @@
   border-bottom: 1px solid #333;
   padding-bottom: 8px;
   margin-bottom: 8px;
+}
+
+.smogon-insights-panel {
+  background: linear-gradient(135deg, #1a2a3a 0%, #0d151f 100%);
+  border: 1px solid #3498db;
+  border-radius: 6px;
+  padding: 8px;
+  margin-top: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+.insight-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  margin-bottom: 4px;
+}
+
+.insight-item .label {
+  color: #3498db;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.insight-item span:last-child {
+  color: #fff;
+}
+
+.insight-item strong {
+  color: #f1c40f; /* Gold for the recommended swap */
+  text-transform: uppercase;
 }

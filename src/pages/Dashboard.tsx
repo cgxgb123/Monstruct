@@ -1,6 +1,7 @@
+// src/pages/Dashboard.tsx
 import { toGif } from '../utils/helpers.ts';
-import { useQuery } from '@apollo/client/react';
-import { GET_MY_TEAMS } from '../utils/mutations.ts';
+import { useQuery, useMutation } from '@apollo/client/react';
+import { GET_MY_TEAMS, DELETE_TEAM } from '../utils/mutations.ts';
 import { useNavigate } from 'react-router-dom';
 import '../css/Dashboard.css';
 
@@ -33,6 +34,16 @@ const Dashboard = () => {
     fetchPolicy: 'network-only',
   });
 
+  const [deleteTeam] = useMutation(DELETE_TEAM, {
+    refetchQueries: [{ query: GET_MY_TEAMS }],
+    onCompleted: () => {
+      alert('Team deleted successfully!');
+    },
+    onError: (err) => {
+      alert(`Failed to delete team: ${err.message}`);
+    },
+  });
+
   if (loading) {
     return (
       <div className="dashboard">
@@ -58,6 +69,20 @@ const Dashboard = () => {
 
   const teams = data?.me?.teams ?? [];
   const username = data?.me?.username ?? 'Trainer';
+
+  const handleDelete = async (teamId: string, teamName: string) => {
+    if (
+      window.confirm(
+        `Are you sure you want to delete "${teamName}"?\n\nThis action cannot be undone!`,
+      )
+    ) {
+      try {
+        await deleteTeam({ variables: { teamId } });
+      } catch (err) {
+        console.error('Delete error:', err);
+      }
+    }
+  };
 
   return (
     <div className="dashboard">
@@ -89,7 +114,11 @@ const Dashboard = () => {
 
       {teams.length === 0 ? (
         <div className="empty-state">
-          <div className="empty-icon">📦</div>
+          <img
+            src="https://media2.giphy.com/media/v1.Y2lkPTZjMDliOTUyZDB4eDVwazA1OW9qdjc2M29pYjhhd2w5N3Y5M3RzcmZwNTZxMWFlZiZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/tfnfQi1gFonKZWmt2c/source.gif"
+            alt="Empty Team Icon"
+            className="empty-icon"
+          />
           <h2>No teams saved yet</h2>
           <p>Start building your dream team in the Team Builder!</p>
           <button
@@ -118,23 +147,17 @@ const Dashboard = () => {
                   <div className="team-actions">
                     <button
                       className="action-btn edit"
-                      onClick={() => navigate(`/builder?teamId=${team._id}`)}
+                      onClick={() => navigate(`/?teamId=${team._id}`)}
                       title="Edit Team"
                     >
                       ✏️
                     </button>
                     <button
                       className="action-btn delete"
+                      onClick={() =>
+                        handleDelete(team._id, team.teamName || 'Untitled Team')
+                      }
                       title="Delete Team"
-                      onClick={async () => {
-                        if (
-                          window.confirm(
-                            `Are you sure you want to delete "${team.teamName}"?`,
-                          )
-                        ) {
-                          alert('Delete functionality coming soon!');
-                        }
-                      }}
                     >
                       🗑️
                     </button>
@@ -197,7 +220,7 @@ const Dashboard = () => {
                   </div>
                   <button
                     className="view-team-btn"
-                    onClick={() => navigate(`/builder?teamId=${team._id}`)}
+                    onClick={() => navigate(`/?teamId=${team._id}`)}
                   >
                     View Team →
                   </button>

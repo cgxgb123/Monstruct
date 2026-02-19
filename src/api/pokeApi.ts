@@ -1,3 +1,6 @@
+// src/api/pokeApi.ts:
+import { PokemonData } from '../utils/types.ts';
+const SPRITE = import.meta.env.SPRITE_CDN;
 const BASE = 'https://pokeapi.co/api/v2';
 
 export const toTitleCase = (str: string) => {
@@ -9,13 +12,28 @@ export const toTitleCase = (str: string) => {
     .join(' ');
 };
 
-export const fetchPokemonData = async (name: string) => {
-  const response = await fetch(`${BASE}/pokemon/${name.toLowerCase()}`);
+export const getR2Sprite = (
+  name: string,
+  isShiny: boolean,
+  isIcon: boolean = false,
+) => {
+  const cleanName = name.toLowerCase().trim().replace(/\s+/g, '-');
+  if (isIcon) return `${BASE}/official-artwork/${cleanName}.png`;
+  return isShiny
+    ? `${SPRITE}/animated-shiny/${cleanName}.gif`
+    : `${SPRITE}/animated/${cleanName}.gif`;
+};
+
+export const fetchPokemonData = async (name: string): Promise<PokemonData> => {
+  const searchName = name.toLowerCase().trim().replace(/\s+/g, '-');
+  const response = await fetch(`${BASE}/pokemon/${searchName}`);
+
   if (!response.ok) throw new Error('Pokemon not found');
   const data = await response.json();
 
   return {
     name: data.name,
+    types: data.types,
     sprite: data.sprites.other['official-artwork'].front_default,
     stats: {
       hp: data.stats[0].base_stat,
@@ -29,53 +47,59 @@ export const fetchPokemonData = async (name: string) => {
   };
 };
 
-export const fetchMoveDetails = async (name: string) => {
-  if (!name || typeof name !== 'string') return null;
+export const fetchAbility = async (abilityName: string) => {
+  if (!abilityName) return null;
   try {
-    const cleanName = name.toLowerCase().trim().replace(/ /g, '-');
-    const response = await fetch(`${BASE}/move/${cleanName}`);
-    if (!response.ok) return null;
-    const data = await response.json();
-
-    const entry = data.flavor_text_entries.find(
-      (e: any) => e.language.name === 'en',
+    const res = await fetch(
+      `${BASE}/ability/${abilityName.toLowerCase().replace(/\s/g, '-')}`,
     );
+    const data = await res.json();
+    return (
+      data.effect_entries.find((e: any) => e.language.name === 'en')
+        ?.short_effect || 'No description available.'
+    );
+  } catch (e) {
+    return null;
+  }
+};
 
+export const fetchItemDetails = async (itemName: string) => {
+  if (!itemName) return null;
+  try {
+    const res = await fetch(
+      `${BASE}/item/${itemName.toLowerCase().replace(/\s/g, '-')}`,
+    );
+    const data = await res.json();
     return {
       name: toTitleCase(data.name),
-      type: data.type.name,
-      power: data.power,
-      accuracy: data.accuracy,
-      pp: data.pp,
-      description: entry
-        ? entry.flavor_text.replace(/\f/g, ' ')
-        : 'No description available.',
+      description:
+        data.effect_entries.find((e: any) => e.language.name === 'en')
+          ?.short_effect || 'No description available.',
+      sprite: data.sprites.default,
     };
   } catch (e) {
     return null;
   }
 };
 
-export const fetchItemDetails = async (name: string) => {
-  if (!name || typeof name !== 'string') return null;
+export const fetchMoveDetails = async (moveName: string) => {
+  if (!moveName) return null;
   try {
-    const cleanName = name.toLowerCase().trim().replace(/ /g, '-');
-    const response = await fetch(`${BASE}/item/${cleanName}`);
-    if (!response.ok) return null;
-    const data = await response.json();
-
-    const entry = data.flavor_text_entries.find(
-      (e: any) => e.language.name === 'en',
+    const res = await fetch(
+      `${BASE}/move/${moveName.toLowerCase().replace(/\s/g, '-')}`,
     );
-
+    const data = await res.json();
     return {
       name: toTitleCase(data.name),
-      description: entry
-        ? entry.text.replace(/\f/g, ' ')
-        : 'No description available.',
+      power: data.power,
+      pp: data.pp,
+      accuracy: data.accuracy,
+      type: toTitleCase(data.type.name),
+      description:
+        data.effect_entries.find((e: any) => e.language.name === 'en')
+          ?.short_effect || 'No description.',
     };
-  } catch (e) {
-    console.error('Item API error:', e);
+  } catch (err) {
     return null;
   }
 };
