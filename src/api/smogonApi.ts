@@ -7,6 +7,7 @@ const SMOGON_STATS_URL = 'https://pkmn.github.io/smogon/data/stats/gen9ou.json';
 //     .join(' ');
 // };
 
+
 export const fetchSmogonInsights = async (pokemonName: string) => {
   try {
     const response = await fetch(SMOGON_STATS_URL);
