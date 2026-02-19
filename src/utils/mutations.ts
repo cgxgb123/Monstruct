@@ -8,6 +8,7 @@ export const GET_POKEMON = gql`
     }
   }
 `;
+
 export const GET_TEAM_BY_ID = gql`
   query GetTeamById($teamId: ID!) {
     getTeam(teamId: $teamId) {
@@ -40,6 +41,37 @@ export const GET_TEAM_BY_ID = gql`
           spa
           spd
           spe
+        }
+      }
+    }
+  }
+`;
+export const GET_MOVE_DETAILS = gql`
+  query GetMoveDetails($name: String!) {
+    getMove(name: $name) {
+      name
+      power
+      accuracy
+      pp
+      type
+      damageClass
+    }
+  }
+`;
+
+export const DELETE_TEAM = gql`
+  mutation DeleteTeam($teamId: ID!) {
+    removeTeam(teamId: $teamId) {
+      _id
+      username
+      teams {
+        _id
+        teamName
+        format
+        members {
+          species
+          item
+          ability
         }
       }
     }
