@@ -1,22 +1,22 @@
 // src/utils/teraTypes.ts:
 import Bug from '../assets/gem/BUG.png';
 import Dark from '../assets/gem/DARK.png';
-import Dragon from '../assets/gem/Dragon.png';
-import Electric from '../assets/gem/Electric.png';
-import Fairy from '../assets/gem/Fairy.png';
-import Fighting from '../assets/gem/Fighting.png';
-import Fire from '../assets/gem/Fire.png';
-import Flying from '../assets/gem/Flying.png';
-import Ghost from '../assets/gem/Ghost.png';
-import Grass from '../assets/gem/Grass.png';
-import Ground from '../assets/gem/Ground.png';
-import Ice from '../assets/gem/Ice.png';
-import Normal from '../assets/gem/Normal.png';
-import Poison from '../assets/gem/Poison.png';
-import Psychic from '../assets/gem/Psychic.png';
-import Rock from '../assets/gem/Rock.png';
-import Steel from '../assets/gem/Steel.png';
-import Water from '../assets/gem/Water.png';
+import Dragon from '../assets/gem/DRAGON.png';
+import Electric from '../assets/gem/ELECTRIC.png';
+import Fairy from '../assets/gem/FAIRY.png';
+import Fighting from '../assets/gem/FIGHTING.png';
+import Fire from '../assets/gem/FIRE.png';
+import Flying from '../assets/gem/FLYING.png';
+import Ghost from '../assets/gem/GHOST.png';
+import Grass from '../assets/gem/GRASS.png';
+import Ground from '../assets/gem/GROUND.png';
+import Ice from '../assets/gem/ICE.png';
+import Normal from '../assets/gem/NORMAL.png';
+import Poison from '../assets/gem/POISON.png';
+import Psychic from '../assets/gem/PSYCHIC.png';
+import Rock from '../assets/gem/ROCK.png';
+import Steel from '../assets/gem/STEEL.png';
+import Water from '../assets/gem/WATER.png';
 
 export const TERA_TYPES: Record<string, string> = {
   Bug,
