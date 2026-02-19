@@ -1,4 +1,6 @@
 @import './index.css';
+
+/* --- Established List and Container Styling --- */
 .team-card ul,
 .team-card li,
 .search-wrapper-card ul,
@@ -14,19 +16,21 @@
 .team-grid-container {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  gap: 40px 25px;
   width: 100%;
-  max-width: 1100px;
-  margin: 20px auto;
-  padding: 0;
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 20px;
 }
 
+/* --- Established Pokemon Visuals --- */
 .pokemon-types {
   display: flex;
   flex-direction: row;
   justify-content: center;
   margin-top: 5px;
 }
+
 .team-card {
   background: var(--card-bg);
   border-radius: 12px;
@@ -34,7 +38,7 @@
   width: 100%;
   max-width: 350px;
   margin: 0 auto;
-  height: 400px;
+  height: 440px;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -45,6 +49,7 @@
 .team-card:hover {
   border-color: #3b82f6;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  z-index: 10;
 }
 
 .empty-slot {
@@ -88,6 +93,7 @@
   object-fit: contain;
 }
 
+/* --- Established Tera and Inputs --- */
 .tera-wrapper {
   position: relative;
 }
@@ -96,6 +102,81 @@
   width: 24px;
   height: 24px;
   cursor: pointer;
+}
+/* Layout for badges in the header */
+.modal-badges {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 4px;
+}
+
+/* Base style for the type text badge */
+.type-badge-text {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: bold;
+  color: white;
+  text-transform: uppercase;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Type Colors */
+.normal {
+  background-color: #a8a878;
+}
+.fire {
+  background-color: #f08030;
+}
+.water {
+  background-color: #6890f0;
+}
+.grass {
+  background-color: #78c850;
+}
+.electric {
+  background-color: #f8d030;
+}
+.ice {
+  background-color: #98d8d8;
+}
+.fighting {
+  background-color: #c03028;
+}
+.poison {
+  background-color: #a040a0;
+}
+.ground {
+  background-color: #e0c068;
+}
+.flying {
+  background-color: #a890f0;
+}
+.psychic {
+  background-color: #f85888;
+}
+.bug {
+  background-color: #a8b820;
+}
+.rock {
+  background-color: #b8a038;
+}
+.ghost {
+  background-color: #705898;
+}
+.dragon {
+  background-color: #7038f8;
+}
+.dark {
+  background-color: #705848;
+}
+.steel {
+  background-color: #b8b8d0;
+}
+.fairy {
+  background-color: #ee99ac;
 }
 
 .tera-dropdown {
@@ -162,6 +243,7 @@
   gap: 5px;
 }
 
+/* --- Established Info Modal (Hover Info) --- */
 .info-modal {
   position: absolute;
   bottom: 105%;
@@ -202,6 +284,7 @@
   background: #444;
 }
 
+/* Established Type Badges Colors */
 .type-badge.fire {
   background: #ff4422;
 }
@@ -263,6 +346,12 @@
   padding: 15px 0;
   margin: 10px 0;
 }
+.column-visuals {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /*  centers the sprite and type badges horizontally */
+  justify-content: center; /*  centers them vertically within the column height */
+}
 
 .visuals-row {
   display: flex;
@@ -319,7 +408,6 @@
   padding: 2px 6px;
   font-size: 1.2rem;
   transition: all 0.3s ease;
-  filter: grayscale(1);
   opacity: 0.6;
 }
 
@@ -330,6 +418,8 @@
     0 0 20px var(--secondary-accent);
   box-shadow: 0 0 10px rgba(255, 77, 77, 0.3);
   animation: shiny-glow 1.5s infinite alternate;
+  filter: grayscale(0);
+  opacity: 1;
 }
 
 @keyframes shiny-glow {
@@ -380,15 +470,6 @@
   border: 1px solid rgba(162, 0, 255, 0.3);
 }
 
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  border-bottom: 1px solid #333;
-  padding-bottom: 8px;
-  margin-bottom: 8px;
-}
-
 .smogon-insights-panel {
   background: linear-gradient(135deg, #1a2a3a 0%, #0d151f 100%);
   border: 1px solid #3498db;
@@ -416,6 +497,166 @@
 }
 
 .insight-item strong {
-  color: #f1c40f; /* Gold for the recommended swap */
+  color: #f1c40f;
   text-transform: uppercase;
+}
+
+/* --- Stats Modal & Focus State (Integrated) --- */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.85); /* Slightly darker for better contrast */
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+}
+
+.stats-modal {
+  background: #1a1e2e;
+  border: 1px solid #444;
+  border-radius: 12px;
+  padding: 20px;
+  width: 480px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+.stats-modal .modal-header h3 {
+  color: white;
+  margin: 0;
+}
+
+.stats-modal .modal-header button {
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.suggested-btn {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 20px;
+  background: #ff1f1f;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  transition: background 0.2s;
+}
+
+.suggested-btn:hover {
+  background: #cc1818;
+}
+
+.nature-row {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+  color: white;
+}
+
+.nature-row input {
+  background: #0f121d;
+  border: 1px solid #333;
+  color: white;
+  padding: 8px;
+  border-radius: 4px;
+  flex: 1;
+}
+
+.stats-editor-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.stat-row-header {
+  display: grid;
+  grid-template-columns: 50px 80px 1fr 80px;
+  gap: 10px;
+  font-size: 0.7rem;
+  color: #777;
+  text-transform: uppercase;
+  font-weight: bold;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #333;
+}
+
+.stat-edit-row {
+  display: grid;
+  grid-template-columns: 50px 80px 1fr 80px;
+  gap: 10px;
+  align-items: center;
+}
+
+.stat-edit-row label {
+  color: #fff;
+  font-weight: bold;
+  font-size: 0.8rem;
+}
+
+.stat-edit-row input[type='number'] {
+  width: 65px;
+  background: #0f121d;
+  border: 1px solid #333;
+  color: white;
+  padding: 6px;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.stat-edit-row .iv-input {
+  border-color: #4a90e2 !important;
+  color: #4a90e2;
+}
+
+/* --- TeamCard Stat Preview Block --- */
+.column-stats {
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid #333;
+}
+
+.edit-stats-trigger {
+  width: 100%;
+  padding: 8px;
+  background: #2a2e3d;
+  border: 1px solid #444;
+  color: #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+.edit-stats-trigger:hover {
+  background: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+.mini-stats-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.mini-stat {
+  font-size: 0.65rem;
+  background: #111;
+  padding: 2px 5px;
+  border-radius: 3px;
+  color: #888;
 }

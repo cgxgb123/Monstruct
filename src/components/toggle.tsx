@@ -1,11 +1,29 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export const ThemeToggle = () => {
   const [isCherish, setIsCherish] = useState(false);
 
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'cherish') {
+      setIsCherish(true);
+      document.documentElement.classList.add('cherish-mode');
+    } else if (savedTheme === 'beast') {
+      document.documentElement.classList.remove('cherish-mode');
+      document.documentElement.classList.add('beast-mode');
+    }
+  }, []);
+
   const toggleTheme = () => {
-    setIsCherish(!isCherish);
-    document.body.classList.toggle('cherish-mode');
+    const newMode = !isCherish;
+    setIsCherish(newMode);
+    localStorage.setItem('theme', newMode ? 'cherish' : 'beast');
+
+    if (newMode) {
+      document.documentElement.classList.add('cherish-mode');
+    } else {
+      document.documentElement.classList.remove('cherish-mode');
+    }
   };
 
   return (

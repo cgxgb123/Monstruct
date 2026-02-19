@@ -13,6 +13,7 @@ import {
   POKEMON_TYPES,
 } from '../utils/types.ts';
 import { calculateStat } from '../utils/statsCalculations.ts';
+import { TYPE_ICONS } from '../utils/teraTypes.ts';
 import '../css/PokemonSlot.css';
 
 const PokemonSlot = ({
@@ -53,12 +54,15 @@ const PokemonSlot = ({
   const slotRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    fetchPokemonData(defaultName).then((data: any) => {
-      const typedData = data as PokemonData; // type assertion to ensure it matches interface
-      setPokemon(typedData);
-      if (typedData?.types?.[0])
-        setTeraType(toTitleCase(typedData.types[0].type.name));
-    });
+    if (!defaultName) return;
+    fetchPokemonData(defaultName)
+      .then((data) => {
+        setPokemon(data);
+        if (data?.types?.[0]) {
+          setTeraType(toTitleCase(data.types[0].type.name));
+        }
+      })
+      .catch((err) => console.error('Failed to fetch:', defaultName, err));
   }, [defaultName]);
 
   useEffect(() => {
@@ -83,10 +87,8 @@ const PokemonSlot = ({
       const newMoves = [...moves];
       newMoves[index] = toTitleCase(value);
       setMoves(newMoves);
-      fetchMoveDetails(value).then(setHoveredInfo);
     } else if (type === 'item') {
       setItem(toTitleCase(value));
-      fetchItemDetails(value).then(setHoveredInfo);
     }
     setActiveDropdown(null);
   };
@@ -140,8 +142,33 @@ const PokemonSlot = ({
             />
           </div>
 
-          <div className="mon-name-display">
-            {toTitleCase(pokemon.name.replace('-', ' '))}
+          <div className="mon-name-display">{toTitleCase(pokemon.name)}</div>
+
+          <div
+            className="types-container"
+            style={{
+              display: 'flex',
+              gap: '8px',
+              justifyContent: 'center',
+              margin: '10px 0',
+            }}
+          >
+            {pokemon.types?.map((t: any) => {
+              const typeName = toTitleCase(t.type.name);
+              return (
+                <img
+                  key={t.type.name}
+                  src={TYPE_ICONS[typeName as keyof typeof TYPE_ICONS]}
+                  alt={typeName}
+                  title={typeName}
+                  style={{
+                    height: '22px',
+                    width: 'auto',
+                    filter: 'drop-shadow(0px 2px 2px rgba(0,0,0,0.3))',
+                  }}
+                />
+              );
+            })}
           </div>
 
           <div className="move-input-wrapper" style={{ marginBottom: '10px' }}>
@@ -187,7 +214,6 @@ const PokemonSlot = ({
                   onMouseEnter={() => handleHover(moves[index], 'move')}
                   onMouseLeave={() => setHoveredInfo(null)}
                 />
-
                 {activeDropdown?.type === 'move' &&
                   activeDropdown.index === index && (
                     <div className="dropdown-list">
@@ -209,14 +235,16 @@ const PokemonSlot = ({
           </div>
 
           {hoveredInfo && (
-            <div
-              className="move-tooltip"
-              style={{ bottom: '100px', left: '10px', zIndex: 100 }}
-            >
+            <div className="move-tooltip">
               <div className="tooltip-header">
                 <span className="tooltip-title">{hoveredInfo.name}</span>
                 {hoveredInfo.type && (
-                  <span className="type-badge">{hoveredInfo.type}</span>
+                  <span
+                    className="type-badge"
+                    style={{ backgroundColor: 'var(--type-bg)' }}
+                  >
+                    {hoveredInfo.type}
+                  </span>
                 )}
               </div>
               {hoveredInfo.power !== undefined && (
@@ -245,8 +273,13 @@ const PokemonSlot = ({
         <div className="stats-section">
           <div className="stats-header">
             <span>Base Stats</span>
-            <span style={{ color: remainingEvs < 0 ? '#d32f2f' : '#2e7d32' }}>
-              Remaining: {remainingEvs}
+            <span
+              style={{
+                color: remainingEvs < 0 ? '#d32f2f' : '#2e7d32',
+                fontWeight: 'bold',
+              }}
+            >
+              Rem: {remainingEvs}
             </span>
           </div>
 
@@ -258,7 +291,6 @@ const PokemonSlot = ({
                 evs[stat],
                 ivs[stat],
               );
-
               return (
                 <div key={stat} className="stat-row">
                   <span className="stat-label">{stat.toUpperCase()}</span>
@@ -295,20 +327,13 @@ const PokemonSlot = ({
               flexDirection: 'column',
             }}
           >
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}
-            >
-              <label className="text-xs text-black-400">Nature:</label>
+            <div className="footer-select-row">
+              <label>Nature:</label>
               <select
                 className="builder-select"
                 value={nature}
                 onChange={(e) => setNature(e.target.value)}
               >
-                {/* Fix: Changed 'natures' to imported 'NATURES' */}
                 {NATURES.map((n: string) => (
                   <option key={n} value={n}>
                     {n}
@@ -316,20 +341,13 @@ const PokemonSlot = ({
                 ))}
               </select>
             </div>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}
-            >
-              <label className="text-xs text-gray-400">Tera Type:</label>
+            <div className="footer-select-row">
+              <label>Tera:</label>
               <select
                 className="builder-select"
                 value={teraType}
                 onChange={(e) => setTeraType(e.target.value)}
               >
-                {/* Fix: Changed 'types' to imported 'POKEMON_TYPES' */}
                 {POKEMON_TYPES.map((t: string) => (
                   <option key={t} value={t}>
                     {t}
