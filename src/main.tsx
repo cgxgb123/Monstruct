@@ -11,7 +11,7 @@ import './css/index.css';
 import App from './App.tsx';
 
 const httpLink = new HttpLink({
-  uri: import.meta.env.VITE_API_URL || 'http://localhost:5000/graphql',
+  uri: import.meta.env.VITE_API_URL,
 });
 
 const authLink = new ApolloLink((operation, forward) => {
