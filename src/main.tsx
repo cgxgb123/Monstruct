@@ -11,7 +11,9 @@ import './css/index.css';
 import App from './App.tsx';
 
 const httpLink = new HttpLink({
-  uri: import.meta.env.VITE_API_URL,
+  uri:
+    import.meta.env.VITE_API_URL ||
+    'https://monstruct-backend.onrender.com/graphql',
 });
 
 const authLink = new ApolloLink((operation, forward) => {
