@@ -17,7 +17,7 @@
 
 - **Frontend:** React with Vite (High-performance UI)
 - **Language:** TypeScript (Type-safety for complex data structures)
-- **Backend:** Node.js / Express
+- **[Backend:](https://github.com/cgxgb123/Monstruct-backend)** Node.js / Express
 - **API:** GraphQL (User data & mutations) & REST (PokéAPI integration)
 - **Database:** MongoDB
 - **Assets:** Cloudflare R2 (Optimized animated sprite hosting)
